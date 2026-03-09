@@ -2,7 +2,7 @@
   "name": "mandarin-sound-table",
   "version": "1.0.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "https://SalahThabet1.github.io/pinyinchart",
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
