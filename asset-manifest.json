@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/pinyinchart/static/css/main.d1a1dc82.css",
+    "main.js": "/pinyinchart/static/js/main.90d26a90.js",
+    "index.html": "/pinyinchart/index.html",
+    "main.d1a1dc82.css.map": "/pinyinchart/static/css/main.d1a1dc82.css.map",
+    "main.90d26a90.js.map": "/pinyinchart/static/js/main.90d26a90.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d1a1dc82.css",
+    "static/js/main.90d26a90.js"
+  ]
+}
