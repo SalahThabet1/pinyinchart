@@ -1,0 +1,396 @@
+/* ===== Tone Pair Board ===== */
+.tp-board {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 1rem 0;
+}
+
+/* ── Header ── */
+.tp-head {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+.tp-head::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background: var(--red);
+  border-radius: 1px;
+}
+
+.tp-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+}
+
+.tp-sub {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+  letter-spacing: 0.02em;
+}
+
+/* ── Slots Row ── */
+.tp-slots-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tp-plus {
+  flex-shrink: 0;
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  width: 1rem;
+  text-align: center;
+}
+
+/* ── Individual Slot ── */
+.tp-slot {
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.5rem 0.5rem;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tp-slot:has(.tp-slot-head) {
+  border-color: rgba(196, 168, 130, 0.2);
+}
+
+.tp-slot--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 1rem 0.5rem;
+  min-height: 5rem;
+  cursor: default;
+}
+
+.tp-slot--empty .tp-placeholder {
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.tp-slot--empty .tp-hint {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  opacity: 0.35;
+}
+
+/* ── Slot Head ── */
+.tp-slot-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(196, 168, 130, 0.07);
+}
+
+.tp-syl {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+.tp-clear {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(196, 168, 130, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.6rem;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tp-clear:hover {
+  background: rgba(192, 57, 43, 0.2);
+  color: var(--red-bright);
+}
+
+.tp-clear:active {
+  transform: scale(0.85);
+}
+
+/* ── Tone Buttons Row ── */
+.tp-tones {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.35rem;
+}
+
+.tp-tone {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.3rem;
+  border: 1px solid rgba(196, 168, 130, 0.12);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.12);
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.tp-tone::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--c);
+  opacity: 0.6;
+}
+
+.tp-tone:hover {
+  border-color: var(--c);
+  background: rgba(196, 168, 130, 0.06);
+}
+
+.tp-tone:active {
+  transform: scale(0.95);
+  background: rgba(196, 168, 130, 0.1);
+}
+
+.tp-tone-num {
+  font-family: var(--font-serif);
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  min-width: 0.55rem;
+  text-align: center;
+}
+
+.tp-tone-py {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--c);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Controls ── */
+.tp-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.tp-btn {
+  flex: 1;
+  padding: 0.55rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.tp-btn--rand {
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+}
+
+.tp-btn--rand:hover {
+  border-color: var(--sand);
+  background: rgba(196, 168, 130, 0.08);
+  color: var(--sand);
+}
+
+.tp-btn--play {
+  background: rgba(139, 26, 26, 0.25);
+  border-color: rgba(139, 26, 26, 0.35);
+  color: var(--red-bright);
+  position: relative;
+  overflow: hidden;
+}
+
+.tp-btn--play:hover:not(:disabled) {
+  background: rgba(139, 26, 26, 0.4);
+  border-color: var(--red-bright);
+  color: #e05a4a;
+}
+
+.tp-btn--playing {
+  animation: tpPulse 0.8s ease-in-out infinite;
+}
+
+.tp-btn--muted {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.tp-btn:disabled {
+  cursor: default;
+}
+
+/* ── Recent Pairs ── */
+.tp-recent {
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.7rem;
+}
+
+.tp-recent-title {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  margin-bottom: 0.5rem;
+}
+
+.tp-recent-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tp-recent-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-secondary);
+  font-family: var(--font-serif);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+
+.tp-recent-row:hover {
+  background: rgba(196, 168, 130, 0.08);
+  border-color: rgba(196, 168, 130, 0.25);
+  color: var(--text-primary);
+}
+
+.tp-recent-row:active {
+  transform: scale(0.95);
+}
+
+.tp-recent-idx {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  min-width: 0.6rem;
+}
+
+.tp-recent-syls {
+  font-size: 0.72rem;
+  color: inherit;
+}
+
+.tp-recent-plus {
+  color: var(--text-secondary);
+  opacity: 0.4;
+  font-size: 0.65rem;
+}
+
+/* ── Animations ── */
+@keyframes tpFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+}
+
+@keyframes tpPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(192, 57, 43, 0); }
+}
+
+/* ── Tablet / Desktop ── */
+@media (min-width: 768px) {
+  .tp-board {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .tp-tones {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .tp-slots-row {
+    gap: 0.75rem;
+  }
+
+  .tp-tone {
+    justify-content: center;
+    padding: 0.45rem 0.2rem;
+  }
+
+  .tp-tone-py {
+    font-size: 0.78rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .tp-slot {
+    padding: 0.75rem 0.6rem 0.55rem;
+  }
+
+  .tp-syl {
+    font-size: 1.25rem;
+  }
+
+  .tp-tone {
+    padding: 0.5rem 0.3rem;
+  }
+}

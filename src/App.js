@@ -2,6 +2,12 @@ import React, { useState, useCallback, useRef, memo } from 'react';
 import pinyinData from './pinyins.json';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
+import SearchBar from './SearchBar';
+import ClickModeSwitch from './ClickModeSwitch';
+import TonePairBoard from './TonePairBoard';
+import LearnSection from './LearnSection';
+import { FINAL_GROUPS } from './finalsGroups';
+import irregulars from './irregulars.json';
 import './App.css';
 
 const mp3Url = id =>
@@ -17,12 +23,9 @@ const INITIALS = [
   '∅','b','p','m','f','d','t','n','l','g','k','h',
   'j','q','x','zh','ch','sh','r','z','c','s',
 ];
-const FINALS = [
-  'i','a','e','ê','ai','ei','ao','ou','an','en','ang','eng',
-  'er','ia','io','ie','iai','iao','iu','ian','in','iang','ing',
-  'u','ua','uo','uai','ui','uan','un','uang','ong','ü','üe',
-  'üan','ün','iong',
-];
+
+/* Build flat FINALS array from FINAL_GROUPS for cell iteration */
+const FINALS = FINAL_GROUPS.flatMap(g => g.finals);
 
 /* Pre-compute every valid cell once at module load */
 const CELLS = (() => {
@@ -41,12 +44,15 @@ const CELLS = (() => {
 })();
 
 /* ── Cell ── */
-const SoundCell = memo(function SoundCell({ cellKey, onTap }) {
+const SoundCell = memo(function SoundCell({ cellKey, onTap, isDimmed, isIrregular }) {
   const data = CELLS[cellKey];
   if (!data) return <td className="cell cell--empty" />;
+  const cls = 'cell-btn' +
+    (isDimmed ? ' cell-btn--dimmed' : '') +
+    (isIrregular ? ' cell-btn--irregular' : '');
   return (
     <td className="cell">
-      <button className="cell-btn" onClick={() => onTap(data.syl, data.pins)}>
+      <button className={cls} onClick={() => onTap(data.syl, data.pins)}>
         {data.syl}
       </button>
     </td>
@@ -92,22 +98,55 @@ function ToneSheet({ syllable, pinyins, onPlay, onClose }) {
   );
 }
 
+/* ── Irregular legend badge ── */
+function IrregularLegend() {
+  return (
+    <div className="irregular-legend">
+      <span className="irregular-legend-dot">⏺</span>
+      <span>Irregular pronunciation — tap to learn more</span>
+    </div>
+  );
+}
+
 /* ── App ── */
 export default function App() {
   const [active, setActive] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [clickMode, setClickMode] = useState('Show tones');
+  const [activeTab, setActiveTab] = useState('chart');
   const audioRef = useRef(null);
 
-  const open = useCallback((syl, pins) => setActive({ syl, pins }), []);
+  const open = useCallback((syl, pins) => {
+    const modeIndex = ['Show tones', 'T1', 'T2', 'T3', 'T4'].indexOf(clickMode);
+    if (modeIndex > 0) {
+      /* Direct tone play — skip the sheet */
+      const dataIdx = TONE_DISPLAY_ORDER[modeIndex - 1];
+      const py = pins[dataIdx];
+      if (!py) return;
+      const ids = pinyinData[py];
+      if (!ids || !ids.length) return;
+      if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+      const a = new Audio(mp3Url(ids[0]));
+      audioRef.current = a;
+      a.play().catch(() => {});
+      return;
+    }
+    /* Show tones (default behavior) */
+    setActive({ syl, pins });
+  }, [clickMode]);
+
   const close = useCallback(() => setActive(null), []);
 
   const play = useCallback(py => {
     const ids = pinyinData[py];
     if (!ids || !ids.length) return;
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
-    const a = new Audio(mp3Url(ids[Math.floor(Math.random() * ids.length)]));
+    const a = new Audio(mp3Url(ids[0]));
     audioRef.current = a;
     a.play().catch(() => {});
   }, []);
+
+  const isSearching = searchQuery.trim().length > 0;
 
   return (
     <div className="app">
@@ -117,28 +156,82 @@ export default function App() {
         <p className="header-sub">Tap a syllable to hear its tones</p>
       </header>
 
-      <div className="table-wrap">
-        <table className="sound-table">
-          <thead>
-            <tr>
-              <th className="th corner" />
-              {FINALS.map(f => (
-                <th key={f} className="th col-head">{f}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {INITIALS.map(ini => (
-              <tr key={ini}>
-                <th className="th row-head">{ini}</th>
-                {FINALS.map(fin => (
-                  <SoundCell key={fin} cellKey={`${ini}|${fin}`} onTap={open} />
+      {/* Tab bar */}
+      <nav className="tab-bar" role="tablist" aria-label="View mode">
+        <button
+          className={'tab-btn' + (activeTab === 'chart' ? ' tab-btn--active' : '')}
+          role="tab"
+          aria-selected={activeTab === 'chart'}
+          onClick={() => setActiveTab('chart')}
+        >
+          Sound Table
+        </button>
+        <button
+          className={'tab-btn' + (activeTab === 'pairs' ? ' tab-btn--active' : '')}
+          role="tab"
+          aria-selected={activeTab === 'pairs'}
+          onClick={() => setActiveTab('pairs')}
+        >
+          Tone Pairs
+        </button>
+      </nav>
+
+      {activeTab === 'chart' && (
+        <>
+          <div className="controls-bar">
+            <SearchBar value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <ClickModeSwitch mode={clickMode} onChange={setClickMode} />
+          </div>
+
+          <div className="table-wrap">
+            <table className="sound-table">
+              <thead>
+                <tr>
+                  <th className="th corner" />
+                  {FINAL_GROUPS.map(group => (
+                    <th
+                      key={group.label}
+                      className="th col-head group-header"
+                      colSpan={group.finals.length}
+                    >
+                      {group.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {INITIALS.map(ini => (
+                  <tr key={ini}>
+                    <th className="th row-head">{ini}</th>
+                    {FINALS.map(fin => {
+                      const cellKey = `${ini}|${fin}`;
+                      const data = CELLS[cellKey];
+                      const syl = data ? data.syl : '';
+                      const matchesQuery = !isSearching ||
+                        syl.toLowerCase().includes(searchQuery.trim().toLowerCase());
+                      const isIrreg = !!irregulars[syl];
+                      return (
+                        <SoundCell
+                          key={fin}
+                          cellKey={cellKey}
+                          onTap={open}
+                          isDimmed={isSearching && !matchesQuery}
+                          isIrregular={isIrreg}
+                        />
+                      );
+                    })}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </tbody>
+            </table>
+            <IrregularLegend />
+          </div>
+
+          <LearnSection />
+        </>
+      )}
+
+      {activeTab === 'pairs' && <TonePairBoard />}
 
       {active && (
         <ToneSheet

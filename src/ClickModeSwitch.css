@@ -1,0 +1,53 @@
+.click-mode-switch {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  width: fit-content;
+  position: relative;
+}
+
+.mode-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  position: relative;
+  z-index: 1;
+}
+
+.mode-btn:hover {
+  color: var(--text-primary);
+  background: rgba(196, 168, 130, 0.06);
+}
+
+.mode-btn:active {
+  background: rgba(196, 168, 130, 0.1);
+}
+
+/* "Show tones" default active state */
+.mode-btn--active {
+  color: var(--text-primary);
+  background: rgba(196, 168, 130, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  font-weight: 500;
+}
+
+.mode-btn--active.mode-btn--tone {
+  color: var(--mode-accent, var(--tone-1));
+  background: color-mix(in srgb, var(--mode-accent, var(--tone-1)) 14%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25),
+              inset 0 0 0 1px color-mix(in srgb, var(--mode-accent, var(--tone-1)) 25%, transparent);
+}
