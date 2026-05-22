@@ -12,14 +12,14 @@
 .cell-btn {
   display: block;
   width: 100%;
-  min-width: 2.8rem;
-  min-height: 2.5rem;
-  padding: 0.45rem 0.25rem;
+  min-width: 2.2rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.15rem;
   border: none;
   background: none;
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   font-weight: 300;
   cursor: pointer;
   transition: background 0.2s, color 0.2s, opacity 0.2s;
@@ -63,6 +63,15 @@
   font-weight: 500;
   text-decoration: underline dotted var(--text-accent);
   text-underline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .cell-btn {
+    min-width: 2.8rem;
+    min-height: 2.5rem;
+    padding: 0.45rem 0.25rem;
+    font-size: 0.8rem;
+  }
 }
 
 @media (min-width: 1200px) {

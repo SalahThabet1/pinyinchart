@@ -12,6 +12,7 @@ const mp3Url = id =>
 
 const TONE_DISPLAY_ORDER = [2, 1, 3, 0]; // data[2]=1st, data[1]=2nd, data[3]=3rd, data[0]=4th
 const TONE_COLORS = ['var(--tone-1)', 'var(--tone-2)', 'var(--tone-3)', 'var(--tone-4)'];
+const TONE_LABELS = ['1st', '2nd', '3rd', '4th'];
 const MAX_RECENT = 5;
 
 /* Light haptic feedback for mobile */
@@ -51,15 +52,16 @@ const ALL_SYLLABLES = (() => {
 /* Sort alphabetically for the picker */
 const ALL_SORTED = [...ALL_SYLLABLES].sort((a, b) => a.syl.localeCompare(b.syl));
 
-/* ===== Play a single pinyin audio, resolves when done ===== */
-function playPromise(py, audioRef) {
+/* ===== Play a single pinyin audio (consistent voice: ids[0]) ===== */
+function playToneNow(py, audioRef) {
   return new Promise((resolve) => {
     const ids = pinyinData[py];
     if (!ids || !ids.length) { resolve(); return; }
     if (audioRef.current) { audioRef.current.pause(); }
-    const a = new Audio(mp3Url(ids[Math.floor(Math.random() * ids.length)]));
+    const a = new Audio(mp3Url(ids[0])); // always use first voice
     audioRef.current = a;
     a.onended = resolve;
+    a.onerror = resolve;
     a.play().catch(() => resolve());
   });
 }
@@ -111,8 +113,31 @@ function SyllablePicker({ onSelect }) {
   );
 }
 
+/* ===== Tone Selector — small dots to pick which tone ===== */
+function ToneSelector({ pins, selectedToneIdx, onSelect }) {
+  return (
+    <div className="tp-tone-selector">
+      {TONE_DISPLAY_ORDER.map((dataIdx, displayIdx) => {
+        const py = pins[dataIdx];
+        if (!py) return null;
+        return (
+          <button
+            key={py}
+            className={`tp-tone-dot${selectedToneIdx === displayIdx ? ' tp-tone-dot--active' : ''}`}
+            style={{ '--c': TONE_COLORS[displayIdx] }}
+            onClick={() => onSelect(displayIdx)}
+            title={`Tone ${displayIdx + 1}: ${py}`}
+          >
+            {displayIdx + 1}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ===== Slot View ===== */
-function SlotView({ slot, placeholder, onClear, onTonePlay, onPick, pickerOpen, setPickerOpen }) {
+function SlotView({ slot, placeholder, onClear, onTonePlay, onPick, pickerOpen, setPickerOpen, selectedTone, setSelectedTone }) {
   if (!slot) {
     if (!pickerOpen) {
       return (
@@ -171,29 +196,27 @@ function SlotView({ slot, placeholder, onClear, onTonePlay, onPick, pickerOpen, 
           <IconClose size={10} />
         </motion.button>
       </div>
-      <div className="tp-tones">
-        {TONE_DISPLAY_ORDER.map((dataIdx, displayIdx) => {
-          const py = pins[dataIdx];
-          if (!py) return null;
-          return (
-            <motion.button
-              key={py}
-              className="tp-tone"
-              style={{ '--c': TONE_COLORS[displayIdx] }}
-              onClick={() => onTonePlay(py)}
-              title={`Play ${py} (tone ${displayIdx + 1})`}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.03 * displayIdx + 0.08, duration: 0.15 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.93 }}
-            >
-              <span className="tp-tone-num">{displayIdx + 1}</span>
-              <span className="tp-tone-py">{py}</span>
-            </motion.button>
-          );
-        })}
-      </div>
+
+      {/* Tone selector dots */}
+      <ToneSelector
+        pins={pins}
+        selectedToneIdx={selectedTone}
+        onSelect={setSelectedTone}
+      />
+
+      {/* Play button for selected tone */}
+      {pins[TONE_DISPLAY_ORDER[selectedTone]] && (
+        <motion.button
+          className="tp-tone-play"
+          style={{ '--c': TONE_COLORS[selectedTone] }}
+          onClick={() => onTonePlay(pins[TONE_DISPLAY_ORDER[selectedTone]])}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.96 }}
+        >
+          <IconPlay size={12} />
+          <span>{TONE_LABELS[selectedTone]} — {pins[TONE_DISPLAY_ORDER[selectedTone]]}</span>
+        </motion.button>
+      )}
     </motion.div>
   );
 }
@@ -231,35 +254,49 @@ export default function TonePairBoard() {
   const [playingBoth, setPlayingBoth] = useState(false);
   const [pickerOpen1, setPickerOpen1] = useState(false);
   const [pickerOpen2, setPickerOpen2] = useState(false);
+  const [selectedTone1, setSelectedTone1] = useState(0); // default: 1st tone
+  const [selectedTone2, setSelectedTone2] = useState(0);
   const audioRef = useRef(null);
 
   /* Cleanup audio on unmount */
   useEffect(() => () => { if (audioRef.current) audioRef.current.pause(); }, []);
 
-  /* Play a single tone */
+  /* Reset selected tone when slot changes */
+  useEffect(() => { setSelectedTone1(0); }, [slot1]);
+  useEffect(() => { setSelectedTone2(0); }, [slot2]);
+
+  /* Play a single tone (consistent voice) */
   const playTone = useCallback((py) => {
     hapticFeedback();
     const ids = pinyinData[py];
     if (!ids || !ids.length) return;
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
-    const a = new Audio(mp3Url(ids[Math.floor(Math.random() * ids.length)]));
+    const a = new Audio(mp3Url(ids[0]));
     audioRef.current = a;
     a.play().catch(() => {});
   }, []);
 
-  /* Play both slots sequentially */
+  /* Play both slots sequentially with short gap */
   const playBoth = useCallback(async () => {
     if (!slot1 && !slot2) return;
     hapticFeedback();
     setPlayingBoth(true);
 
-    const pickPy = (pins) => pins[TONE_DISPLAY_ORDER[0]] || pins[TONE_DISPLAY_ORDER.find(i => pins[i])];
+    if (slot1) {
+      const py = slot1.pins[TONE_DISPLAY_ORDER[selectedTone1]];
+      if (py) await playToneNow(py, audioRef);
+    }
 
-    if (slot1) { const py = pickPy(slot1.pins); if (py) await playPromise(py, audioRef); }
-    if (slot2) { const py = pickPy(slot2.pins); if (py) await playPromise(py, audioRef); }
+    /* Short gap between tones (200ms) */
+    await new Promise(r => setTimeout(r, 200));
+
+    if (slot2) {
+      const py = slot2.pins[TONE_DISPLAY_ORDER[selectedTone2]];
+      if (py) await playToneNow(py, audioRef);
+    }
 
     setPlayingBoth(false);
-  }, [slot1, slot2]);
+  }, [slot1, slot2, selectedTone1, selectedTone2]);
 
   /* Random pair */
   const randomPair = useCallback(() => {
@@ -339,6 +376,8 @@ export default function TonePairBoard() {
           onPick={s => setSlot1(s)}
           pickerOpen={pickerOpen1}
           setPickerOpen={setPickerOpen1}
+          selectedTone={selectedTone1}
+          setSelectedTone={setSelectedTone1}
         />
         <span className="tp-plus">+</span>
         <SlotView
@@ -349,6 +388,8 @@ export default function TonePairBoard() {
           onPick={s => setSlot2(s)}
           pickerOpen={pickerOpen2}
           setPickerOpen={setPickerOpen2}
+          selectedTone={selectedTone2}
+          setSelectedTone={setSelectedTone2}
         />
       </div>
 
