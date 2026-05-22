@@ -45,12 +45,11 @@ const CELLS = (() => {
 })();
 
 /* ── Cell ── */
-const SoundCell = memo(function SoundCell({ cellKey, onTap, isDimmed, isHidden, isMatched, isIrregular }) {
+const SoundCell = memo(function SoundCell({ cellKey, onTap, isDimmed, isMatched, isIrregular }) {
   const data = CELLS[cellKey];
   if (!data) return <td className="cell cell--empty" />;
   const cls = 'cell-btn' +
     (isDimmed ? ' cell-btn--dimmed' : '') +
-    (isHidden ? ' cell-btn--hidden' : '') +
     (isMatched ? ' cell-btn--matched' : '') +
     (isIrregular ? ' cell-btn--irregular' : '');
   return (
@@ -102,16 +101,31 @@ function ToneSheet({ syllable, pinyins, onPlay, onClose }) {
 }
 
 /* ── Irregular legend badge ── */
-function IrregularLegend() {
-  const scrollToLearn = () => {
-    const el = document.getElementById('learn-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+function IrregularCard() {
+  const [open, setOpen] = useState(false);
+  const irregKeys = Object.keys(irregulars);
   return (
-    <button className="irregular-legend" onClick={scrollToLearn}>
-      <IconInfo size={14} />
-      <span>Irregular pronunciation — tap to learn more</span>
-    </button>
+    <div className={`irregular-card${open ? ' irregular-card--open' : ''}`}>
+      <button className="irregular-card-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+        <IconInfo size={14} />
+        <span>Irregular Pronunciations ({irregKeys.length})</span>
+        <span className="irregular-card-arrow" aria-hidden="true">
+          <svg width="8" height="5" viewBox="0 0 8 5" fill="none">
+            <path d="M1 1l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+      </button>
+      {open && (
+        <div className="irregular-card-body">
+          {irregKeys.map(k => (
+            <div key={k} className="irregular-card-row">
+              <code className="irregular-card-syl">{k}</code>
+              <span className="irregular-card-exp">{irregulars[k]}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -122,7 +136,6 @@ export default function App() {
   const [clickMode, setClickMode] = useState('Show tones');
   const [activeTab, setActiveTab] = useState('chart');
   const [searchMode, setSearchMode] = useState('syllable'); // 'syllable' | 'pinyin' | 'both'
-  const [nonMatchBehavior, setNonMatchBehavior] = useState('dim'); // 'dim' | 'hide'
   const audioRef = useRef(null);
 
   const open = useCallback((syl, pins) => {
@@ -214,8 +227,6 @@ export default function App() {
               onChange={e => setSearchQuery(e.target.value)}
               searchMode={searchMode}
               onSearchModeChange={setSearchMode}
-              nonMatchBehavior={nonMatchBehavior}
-              onNonMatchBehaviorChange={setNonMatchBehavior}
             />
             <ClickModeSwitch mode={clickMode} onChange={setClickMode} />
           </div>
@@ -261,8 +272,7 @@ export default function App() {
                           key={fin}
                           cellKey={cellKey}
                           onTap={open}
-                          isDimmed={isSearching && !matchesQuery && nonMatchBehavior === 'dim'}
-                          isHidden={isSearching && !matchesQuery && nonMatchBehavior === 'hide'}
+                          isDimmed={isSearching && !matchesQuery}
                           isMatched={isSearching && matchesQuery}
                           isIrregular={isIrreg}
                         />
@@ -277,7 +287,7 @@ export default function App() {
                 Matched <strong>{matchCount}</strong> / {totalCells} syllables
               </div>
             )}
-            <IrregularLegend />
+            <IrregularCard />
           </div>
 
           <LearnSection />

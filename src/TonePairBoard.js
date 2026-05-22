@@ -1,9 +1,9 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import pinyinData from './pinyins.json';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
-import { IconDice, IconPlay, IconSpeaker, IconClose } from './icons';
+import { IconDice, IconPlay, IconSpeaker, IconClose, IconSearch } from './icons';
 import './TonePairBoard.css';
 
 /* ===== Constants ===== */
@@ -41,6 +41,9 @@ const ALL_SYLLABLES = (() => {
   return list;
 })();
 
+/* Sort alphabetically for the picker */
+const ALL_SORTED = [...ALL_SYLLABLES].sort((a, b) => a.syl.localeCompare(b.syl));
+
 /* ===== Play a single pinyin audio, resolves when done ===== */
 function playPromise(py, audioRef) {
   return new Promise((resolve) => {
@@ -54,18 +57,81 @@ function playPromise(py, audioRef) {
   });
 }
 
+/* ===== Syllable Picker (search + autocomplete) ===== */
+function SyllablePicker({ onSelect }) {
+  const [query, setQuery] = useState('');
+
+  const results = useMemo(() => {
+    if (!query.trim()) return [];
+    const q = query.trim().toLowerCase();
+    return ALL_SORTED
+      .filter(s => s.syl.toLowerCase().includes(q))
+      .slice(0, 15);
+  }, [query]);
+
+  return (
+    <div className="tp-picker">
+      <div className="tp-picker-input-wrap">
+        <IconSearch size={12} />
+        <input
+          className="tp-picker-input"
+          type="text"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Type a syllable…"
+          autoFocus
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </div>
+      {results.length > 0 && (
+        <div className="tp-picker-results">
+          {results.map(s => (
+            <button
+              key={s.syl}
+              className="tp-picker-item"
+              onClick={() => onSelect(s)}
+            >
+              {s.syl}
+            </button>
+          ))}
+        </div>
+      )}
+      {query.trim() && results.length === 0 && (
+        <div className="tp-picker-empty">No matches</div>
+      )}
+    </div>
+  );
+}
+
 /* ===== Slot View ===== */
-function SlotView({ slot, placeholder, onClear, onTonePlay }) {
+function SlotView({ slot, placeholder, onClear, onTonePlay, onPick, pickerOpen, setPickerOpen }) {
   if (!slot) {
+    if (!pickerOpen) {
+      return (
+        <motion.button
+          className="tp-slot tp-slot--empty"
+          onClick={() => setPickerOpen(true)}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          whileTap={{ scale: 0.97 }}
+        >
+          <span className="tp-placeholder">{placeholder}</span>
+          <span className="tp-hint">Tap to select</span>
+        </motion.button>
+      );
+    }
     return (
       <motion.div
-        className="tp-slot tp-slot--empty"
+        className="tp-slot tp-slot--picker"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.15 }}
       >
-        <span className="tp-placeholder">{placeholder}</span>
-        <span className="tp-hint">Tap a cell in the chart</span>
+        <SyllablePicker
+          onSelect={(s) => { onPick(s); setPickerOpen(false); }}
+        />
       </motion.div>
     );
   }
@@ -156,6 +222,8 @@ export default function TonePairBoard() {
   const [slot2, setSlot2] = useState(null);
   const [recent, setRecent] = useState([]);
   const [playingBoth, setPlayingBoth] = useState(false);
+  const [pickerOpen1, setPickerOpen1] = useState(false);
+  const [pickerOpen2, setPickerOpen2] = useState(false);
   const audioRef = useRef(null);
 
   /* Cleanup audio on unmount */
@@ -194,6 +262,8 @@ export default function TonePairBoard() {
     const s2 = ALL_SYLLABLES[i2];
     setSlot1(s1);
     setSlot2(s2);
+    setPickerOpen1(false);
+    setPickerOpen2(false);
     setRecent(prev => {
       const pair = { slot1: s1, slot2: s2 };
       return [pair, ...prev.filter(
@@ -206,6 +276,8 @@ export default function TonePairBoard() {
   const recallPair = useCallback((pair) => {
     setSlot1(pair.slot1 || null);
     setSlot2(pair.slot2 || null);
+    setPickerOpen1(false);
+    setPickerOpen2(false);
   }, []);
 
   /* Auto-add to recent when both slots are filled */
@@ -219,26 +291,6 @@ export default function TonePairBoard() {
       return [{ slot1, slot2 }, ...prev].slice(0, MAX_RECENT);
     });
   }, [slot1, slot2]);
-
-  /* Fill a slot from an external call (chart click) */
-  const fillFromChart = useCallback((syl, pins) => {
-    const entry = { syl, pins };
-    if (!slot1) {
-      setSlot1(entry);
-    } else if (!slot2) {
-      setSlot2(entry);
-    } else {
-      /* Both filled — replace slot1, demote to slot2 */
-      setSlot2(slot1);
-      setSlot1(entry);
-    }
-  }, [slot1, slot2]);
-
-  /* Expose fillFromChart globally so App.js can call it */
-  useEffect(() => {
-    window.__fillTonePairSlot = fillFromChart;
-    return () => { delete window.__fillTonePairSlot; };
-  }, [fillFromChart]);
 
   const hasBoth = !!(slot1 && slot2);
 
@@ -273,15 +325,21 @@ export default function TonePairBoard() {
         <SlotView
           slot={slot1}
           placeholder="Slot 1"
-          onClear={() => setSlot1(null)}
+          onClear={() => { setSlot1(null); setPickerOpen1(false); }}
           onTonePlay={playTone}
+          onPick={s => setSlot1(s)}
+          pickerOpen={pickerOpen1}
+          setPickerOpen={setPickerOpen1}
         />
         <span className="tp-plus">+</span>
         <SlotView
           slot={slot2}
           placeholder="Slot 2"
-          onClear={() => setSlot2(null)}
+          onClear={() => { setSlot2(null); setPickerOpen2(false); }}
           onTonePlay={playTone}
+          onPick={s => setSlot2(s)}
+          pickerOpen={pickerOpen2}
+          setPickerOpen={setPickerOpen2}
         />
       </div>
 

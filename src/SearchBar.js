@@ -1,16 +1,13 @@
 import React, { memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IconSearch, IconFilter, IconCheck, IconClose } from './icons';
+
 import './SearchBar.css';
 
 const SEARCH_MODES = [
   { value: 'syllable', label: 'Syllable' },
   { value: 'pinyin', label: 'Pinyin' },
   { value: 'both', label: 'Both' },
-];
-const NON_MATCH_OPTIONS = [
-  { value: 'dim', label: 'Dim' },
-  { value: 'hide', label: 'Hide' },
 ];
 
 const SearchBar = memo(function SearchBar({
@@ -19,8 +16,6 @@ const SearchBar = memo(function SearchBar({
   placeholder = 'Search syllables…',
   searchMode = 'syllable',
   onSearchModeChange,
-  nonMatchBehavior = 'dim',
-  onNonMatchBehaviorChange,
 }) {
   const [showOptions, setShowOptions] = useState(false);
 
@@ -95,23 +90,6 @@ const SearchBar = memo(function SearchBar({
                     aria-pressed={searchMode === value}
                   >
                     {searchMode === value && <IconCheck size={10} />}
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="search-options-section">
-              <span className="search-options-label">Non-matches</span>
-              <div className="search-options-group">
-                {NON_MATCH_OPTIONS.map(({ value, label }) => (
-                  <button
-                    key={value}
-                    className={`search-option-pill ${nonMatchBehavior === value ? 'active' : ''}`}
-                    onClick={() => onNonMatchBehaviorChange?.(value)}
-                    aria-pressed={nonMatchBehavior === value}
-                  >
-                    {nonMatchBehavior === value && <IconCheck size={10} />}
                     {label}
                   </button>
                 ))}

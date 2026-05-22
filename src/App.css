@@ -282,11 +282,6 @@
   box-shadow: 0 0 0 2px var(--highlight-border), 0 0 20px rgba(192, 57, 43, 0.18);
 }
 
-/* ===== Hidden cell ===== */
-.cell-btn--hidden {
-  display: none;
-}
-
 /* ===== Irregular cell ===== */
 .cell-btn--irregular {
   font-weight: 500;
@@ -294,29 +289,87 @@
   text-underline-offset: 2px;
 }
 
-/* ===== Irregular legend ===== */
-.irregular-legend {
+/* ===== Irregular card (inline collapsible) ===== */
+.irregular-card {
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+}
+
+.irregular-card-head {
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  width: 100%;
   padding: 0.4rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-accent);
   font-family: var(--font-sans);
   font-size: 0.62rem;
-  font-weight: 400;
-  color: var(--text-accent);
-  border: none;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-card);
+  font-weight: 500;
   letter-spacing: 0.02em;
-  transition: background 0.2s ease;
+  cursor: pointer;
+  text-align: left;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s ease;
 }
 
-.irregular-legend:active {
+.irregular-card-head:active {
   background: var(--bg-hover);
+}
+
+.irregular-card-arrow {
+  margin-left: auto;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  transition: transform 0.2s ease;
+}
+
+.irregular-card--open .irregular-card-arrow {
+  transform: rotate(180deg);
+}
+
+.irregular-card-body {
+  max-height: 220px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border-color);
+  padding: 0.4rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  scrollbar-width: thin;
+}
+
+.irregular-card-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+  font-size: 0.6rem;
+}
+
+.irregular-card-row + .irregular-card-row {
+  border-top: 1px solid rgba(232, 221, 208, 0.4);
+}
+
+.irregular-card-syl {
+  flex-shrink: 0;
+  font-family: var(--font-serif);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-accent);
+  min-width: 3rem;
+  background: var(--bg-secondary);
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.irregular-card-exp {
+  font-family: var(--font-sans);
+  font-weight: 350;
+  color: var(--text-primary);
+  line-height: 1.45;
 }
 
 /* ===== Search info ===== */
