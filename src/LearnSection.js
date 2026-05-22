@@ -93,7 +93,7 @@ export default function LearnSection() {
   const irregKeys = Object.keys(irregulars);
 
   return (
-    <section className="learn">
+    <section className="learn" id="learn-section">
       <div className="learn-inner">
         <motion.h2
           className="learn-heading"

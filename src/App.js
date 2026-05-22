@@ -8,6 +8,7 @@ import TonePairBoard from './TonePairBoard';
 import LearnSection from './LearnSection';
 import { FINAL_GROUPS } from './finalsGroups';
 import irregulars from './irregulars.json';
+import { IconInfo } from './icons';
 import './App.css';
 
 const mp3Url = id =>
@@ -102,11 +103,15 @@ function ToneSheet({ syllable, pinyins, onPlay, onClose }) {
 
 /* ── Irregular legend badge ── */
 function IrregularLegend() {
+  const scrollToLearn = () => {
+    const el = document.getElementById('learn-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   return (
-    <div className="irregular-legend">
-      <span className="irregular-legend-dot">⏺</span>
+    <button className="irregular-legend" onClick={scrollToLearn}>
+      <IconInfo size={14} />
       <span>Irregular pronunciation — tap to learn more</span>
-    </div>
+    </button>
   );
 }
 
@@ -177,7 +182,7 @@ export default function App() {
     <div className="app">
       <header className="header">
         <div className="header-tag">Falafel in Hotpot</div>
-        <h1 className="header-title">pinyin <span className="header-zh">chart</span></h1>
+        <h1 className="header-title">pinyin chart</h1>
         <p className="header-sub">Tap any syllable to hear its tones</p>
       </header>
 

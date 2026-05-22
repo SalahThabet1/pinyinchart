@@ -3,16 +3,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { IconSearch, IconFilter, IconCheck, IconClose } from './icons';
 import './SearchBar.css';
 
-const SEARCH_MODES = ['Syllable', 'Pinyin', 'Both'];
-const NON_MATCH_OPTIONS = ['Dim', 'Hide'];
+const SEARCH_MODES = [
+  { value: 'syllable', label: 'Syllable' },
+  { value: 'pinyin', label: 'Pinyin' },
+  { value: 'both', label: 'Both' },
+];
+const NON_MATCH_OPTIONS = [
+  { value: 'dim', label: 'Dim' },
+  { value: 'hide', label: 'Hide' },
+];
 
 const SearchBar = memo(function SearchBar({
   value = '',
   onChange,
   placeholder = 'Search syllables…',
-  searchMode = 'Both',
+  searchMode = 'syllable',
   onSearchModeChange,
-  nonMatchBehavior = 'Dim',
+  nonMatchBehavior = 'dim',
   onNonMatchBehaviorChange,
 }) {
   const [showOptions, setShowOptions] = useState(false);
@@ -80,15 +87,15 @@ const SearchBar = memo(function SearchBar({
             <div className="search-options-section">
               <span className="search-options-label">Search in</span>
               <div className="search-options-group">
-                {SEARCH_MODES.map((mode) => (
+                {SEARCH_MODES.map(({ value, label }) => (
                   <button
-                    key={mode}
-                    className={`search-option-pill ${searchMode === mode ? 'active' : ''}`}
-                    onClick={() => onSearchModeChange?.(mode)}
-                    aria-pressed={searchMode === mode}
+                    key={value}
+                    className={`search-option-pill ${searchMode === value ? 'active' : ''}`}
+                    onClick={() => onSearchModeChange?.(value)}
+                    aria-pressed={searchMode === value}
                   >
-                    {searchMode === mode && <IconCheck size={10} />}
-                    {mode}
+                    {searchMode === value && <IconCheck size={10} />}
+                    {label}
                   </button>
                 ))}
               </div>
@@ -97,15 +104,15 @@ const SearchBar = memo(function SearchBar({
             <div className="search-options-section">
               <span className="search-options-label">Non-matches</span>
               <div className="search-options-group">
-                {NON_MATCH_OPTIONS.map((opt) => (
+                {NON_MATCH_OPTIONS.map(({ value, label }) => (
                   <button
-                    key={opt}
-                    className={`search-option-pill ${nonMatchBehavior === opt ? 'active' : ''}`}
-                    onClick={() => onNonMatchBehaviorChange?.(opt)}
-                    aria-pressed={nonMatchBehavior === opt}
+                    key={value}
+                    className={`search-option-pill ${nonMatchBehavior === value ? 'active' : ''}`}
+                    onClick={() => onNonMatchBehaviorChange?.(value)}
+                    aria-pressed={nonMatchBehavior === value}
                   >
-                    {nonMatchBehavior === opt && <IconCheck size={10} />}
-                    {opt}
+                    {nonMatchBehavior === value && <IconCheck size={10} />}
+                    {label}
                   </button>
                 ))}
               </div>
