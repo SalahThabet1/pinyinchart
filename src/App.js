@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, memo, useMemo } from 'react';
-import { motion, LayoutGroup, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import pinyinData from './pinyins.json';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
@@ -11,6 +11,9 @@ import { FINAL_GROUPS } from './finalsGroups';
 import irregulars from './irregulars.json';
 import { IconInfo } from './icons';
 import './App.css';
+import './components/SoundCell.css';
+import './components/ToneSheet.css';
+import './components/IrregularCard.css';
 
 const mp3Url = id =>
   `https://tone.lib.msu.edu/tone/${id}/PROXY_MP3/download`;
@@ -62,22 +65,9 @@ const SoundCell = memo(function SoundCell({ cellKey, onTap, isDimmed, isMatched,
     (isIrregular ? ' cell-btn--irregular' : '');
   return (
     <td className="cell">
-      <motion.button
-        className={cls}
-        onClick={() => onTap(data.syl, data.pins)}
-        layout
-        initial={false}
-        animate={{
-          opacity: isDimmed ? 0.15 : 1,
-          scale: isDimmed ? 0.85 : isMatched ? 1.04 : 1,
-        }}
-        transition={{
-          duration: 0.2,
-          ease: 'easeInOut',
-        }}
-      >
+      <button className={cls} onClick={() => onTap(data.syl, data.pins)}>
         {data.syl}
-      </motion.button>
+      </button>
     </td>
   );
 });
@@ -199,27 +189,27 @@ export default function App() {
   const cellKeys = Object.keys(CELLS);
   const totalCells = cellKeys.length;
 
-  const matchCount = useMemo(() => {
-    if (!isSearching) return totalCells;
+  /* Pre-compute matched cell keys — single pass, O(1) lookup per cell */
+  const matchedKeys = useMemo(() => {
+    const set = new Set();
+    if (!isSearching) return set;
     const q = searchQuery.trim().toLowerCase();
-    let count = 0;
+    if (!q) return set;
     for (const key of cellKeys) {
       const data = CELLS[key];
       if (!data) continue;
-      const syl = data.syl;
       if (searchMode === 'syllable' || searchMode === 'both') {
-        if (syl.toLowerCase().includes(q)) { count++; continue; }
+        if (data.syl.toLowerCase().includes(q)) { set.add(key); continue; }
       }
       if (searchMode === 'pinyin' || searchMode === 'both') {
-        if (data.pins && data.pins.some(p => p && p.toLowerCase().includes(q))) { count++; continue; }
+        if (data.pins && data.pins.some(p => p && p.toLowerCase().includes(q))) { set.add(key); continue; }
       }
     }
-    return count;
-  }, [searchQuery, searchMode, isSearching, totalCells, cellKeys]);
+    return set;
+  }, [searchQuery, searchMode, isSearching, cellKeys]);
 
   return (
-    <LayoutGroup>
-      <div className="app">
+    <div className="app">
         <header className="header">
           <div className="header-tag">Falafel in Hotpot</div>
           <h1 className="header-title">pinyin chart</h1>
@@ -274,8 +264,7 @@ export default function App() {
                     ))}
                   </tr>
                 </thead>
-                <AnimatePresence>
-                  <tbody>
+                <tbody>
                     {INITIALS.map(ini => (
                       <tr key={ini}>
                         <th className="th row-head">{ini}</th>
@@ -283,17 +272,7 @@ export default function App() {
                           const cellKey = `${ini}|${fin}`;
                           const data = CELLS[cellKey];
                           const syl = data ? data.syl : '';
-                          const matchesQuery = !isSearching || (() => {
-                            const q = searchQuery.trim().toLowerCase();
-                            if (!q) return true;
-                            if (searchMode === 'syllable' || searchMode === 'both') {
-                              if (syl.toLowerCase().includes(q)) return true;
-                            }
-                            if (searchMode === 'pinyin' || searchMode === 'both') {
-                              if (data && data.pins && data.pins.some(p => p && p.toLowerCase().includes(q))) return true;
-                            }
-                            return false;
-                          })();
+                          const matchesQuery = !isSearching || matchedKeys.has(cellKey);
                           const isIrreg = !!irregulars[syl];
                           return (
                             <SoundCell
@@ -309,7 +288,6 @@ export default function App() {
                       </tr>
                     ))}
                   </tbody>
-                </AnimatePresence>
               </table>
               <AnimatePresence>
                 {isSearching && (
@@ -320,7 +298,7 @@ export default function App() {
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.15 }}
                   >
-                    Matched <strong>{matchCount}</strong> / {totalCells} syllables
+                    Matched <strong>{matchedKeys.size || totalCells}</strong> / {totalCells} syllables
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -342,6 +320,5 @@ export default function App() {
           />
         )}
       </div>
-    </LayoutGroup>
   );
 }
