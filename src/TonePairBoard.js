@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import pinyinData from './pinyins.json';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
+import { IconDice, IconPlay, IconSpeaker, IconClose } from './icons';
 import './TonePairBoard.css';
 
 /* ===== Constants ===== */
@@ -94,7 +95,7 @@ function SlotView({ slot, placeholder, onClear, onTonePlay }) {
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.85 }}
         >
-          ✕
+          <IconClose size={10} />
         </motion.button>
       </div>
       <div className="tp-tones">
@@ -292,7 +293,7 @@ export default function TonePairBoard() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
         >
-          🎲 Random Pair
+          <IconDice size={14} /> Random Pair
         </motion.button>
         <motion.button
           className={`tp-btn tp-btn--play${!hasBoth ? ' tp-btn--muted' : ''}${playingBoth ? ' tp-btn--playing' : ''}`}
@@ -303,7 +304,7 @@ export default function TonePairBoard() {
           animate={playingBoth ? { scale: [1, 1.03, 1] } : { scale: 1 }}
           transition={playingBoth ? { duration: 0.8, repeat: Infinity } : {}}
         >
-          {playingBoth ? '🔊 Playing…' : '▶ Play Both'}
+          {playingBoth ? <><IconSpeaker size={14} /> Playing…</> : <><IconPlay size={14} /> Play Both</>}
         </motion.button>
       </div>
 

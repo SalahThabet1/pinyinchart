@@ -1,3 +1,9 @@
+/* ─── Search Bar Container ─── */
+
+.search-bar-wrapper {
+  position: relative;
+}
+
 .search-bar {
   display: flex;
   align-items: center;
@@ -9,23 +15,33 @@
   transition: border-color 0.2s var(--anim-ease-out), box-shadow 0.2s var(--anim-ease-out);
 }
 
-.search-bar:focus-within {
-  border-color: var(--sand);
-  box-shadow: 0 0 0 1px rgba(196, 168, 130, 0.15), 0 0 12px rgba(196, 168, 130, 0.05);
+.search-bar:hover {
+  border-color: #d8cbbe;
 }
+
+.search-bar:focus-within {
+  border-color: var(--text-accent);
+  box-shadow: 0 0 0 1px rgba(192, 57, 43, 0.12), 0 0 12px rgba(192, 57, 43, 0.06);
+}
+
+/* ─── Search Icon ─── */
 
 .search-icon {
   flex-shrink: 0;
-  font-size: 0.75rem;
-  line-height: 1;
-  opacity: 0.5;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  opacity: 0.55;
   pointer-events: none;
   transition: opacity 0.2s ease;
+  line-height: 1;
 }
 
 .search-bar:focus-within .search-icon {
-  opacity: 0.8;
+  opacity: 0.85;
 }
+
+/* ─── Input ─── */
 
 .search-input {
   flex: 1;
@@ -53,28 +69,51 @@
   opacity: 0.4;
 }
 
-.search-clear {
+/* ─── Clear & Filter Buttons ─── */
+
+.search-clear,
+.search-filter-toggle {
   flex-shrink: 0;
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.3rem;
+  height: 1.3rem;
   border: none;
   border-radius: 50%;
-  background: rgba(196, 168, 130, 0.12);
+  background: transparent;
   color: var(--text-secondary);
-  font-size: 0.5rem;
   cursor: pointer;
   display: grid;
   place-items: center;
   padding: 0;
   line-height: 1;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
   -webkit-tap-highlight-color: transparent;
+  opacity: 0.5;
 }
 
-.search-clear:hover {
-  background: rgba(192, 57, 43, 0.2);
-  color: var(--red-bright);
+.search-clear {
+  width: 1.2rem;
+  height: 1.2rem;
 }
+
+.search-filter-toggle {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.search-clear:hover,
+.search-filter-toggle:hover {
+  background: rgba(192, 57, 43, 0.1);
+  color: var(--text-accent);
+  opacity: 1;
+}
+
+.search-filter-toggle.active {
+  color: var(--text-accent);
+  opacity: 1;
+  background: rgba(192, 57, 43, 0.08);
+}
+
+/* ─── Hint ─── */
 
 .search-hint {
   flex-shrink: 0;
@@ -82,7 +121,7 @@
   font-size: 0.58rem;
   font-weight: 400;
   color: var(--text-secondary);
-  opacity: 0.5;
+  opacity: 0.4;
   letter-spacing: 0.02em;
   white-space: nowrap;
   pointer-events: none;
@@ -90,5 +129,77 @@
 }
 
 .search-bar:focus-within .search-hint {
-  opacity: 0.3;
+  opacity: 0.25;
+}
+
+/* ─── Options Panel ─── */
+
+.search-options-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(28, 28, 28, 0.08);
+  padding: 0.6rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.search-options-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-options-label {
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 450;
+  color: var(--text-secondary);
+  min-width: 4.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.search-options-group {
+  flex: 1;
+  display: flex;
+  gap: 0.3rem;
+}
+
+.search-option-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.search-option-pill:hover {
+  border-color: var(--highlight-border);
+  color: var(--text-primary);
+  background: var(--highlight-bg);
+}
+
+.search-option-pill.active {
+  border-color: var(--text-accent);
+  color: var(--text-accent);
+  background: var(--highlight-bg);
+  font-weight: 500;
 }

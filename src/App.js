@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, memo } from 'react';
+import React, { useState, useCallback, useRef, memo, useMemo } from 'react';
 import pinyinData from './pinyins.json';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
@@ -44,11 +44,13 @@ const CELLS = (() => {
 })();
 
 /* ── Cell ── */
-const SoundCell = memo(function SoundCell({ cellKey, onTap, isDimmed, isIrregular }) {
+const SoundCell = memo(function SoundCell({ cellKey, onTap, isDimmed, isHidden, isMatched, isIrregular }) {
   const data = CELLS[cellKey];
   if (!data) return <td className="cell cell--empty" />;
   const cls = 'cell-btn' +
     (isDimmed ? ' cell-btn--dimmed' : '') +
+    (isHidden ? ' cell-btn--hidden' : '') +
+    (isMatched ? ' cell-btn--matched' : '') +
     (isIrregular ? ' cell-btn--irregular' : '');
   return (
     <td className="cell">
@@ -114,6 +116,8 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [clickMode, setClickMode] = useState('Show tones');
   const [activeTab, setActiveTab] = useState('chart');
+  const [searchMode, setSearchMode] = useState('syllable'); // 'syllable' | 'pinyin' | 'both'
+  const [nonMatchBehavior, setNonMatchBehavior] = useState('dim'); // 'dim' | 'hide'
   const audioRef = useRef(null);
 
   const open = useCallback((syl, pins) => {
@@ -148,12 +152,33 @@ export default function App() {
 
   const isSearching = searchQuery.trim().length > 0;
 
+  const cellKeys = Object.keys(CELLS);
+  const totalCells = cellKeys.length;
+
+  const matchCount = useMemo(() => {
+    if (!isSearching) return totalCells;
+    const q = searchQuery.trim().toLowerCase();
+    let count = 0;
+    for (const key of cellKeys) {
+      const data = CELLS[key];
+      if (!data) continue;
+      const syl = data.syl;
+      if (searchMode === 'syllable' || searchMode === 'both') {
+        if (syl.toLowerCase().includes(q)) { count++; continue; }
+      }
+      if (searchMode === 'pinyin' || searchMode === 'both') {
+        if (data.pins && data.pins.some(p => p && p.toLowerCase().includes(q))) { count++; continue; }
+      }
+    }
+    return count;
+  }, [searchQuery, searchMode, isSearching, totalCells, cellKeys]);
+
   return (
     <div className="app">
       <header className="header">
-        <div className="header-tag">Mandarin Chinese</div>
-        <h1 className="header-title"><span className="header-zh">拼音</span> Sound Table</h1>
-        <p className="header-sub">Tap a syllable to hear its tones</p>
+        <div className="header-tag">Falafel in Hotpot</div>
+        <h1 className="header-title">pinyin <span className="header-zh">chart</span></h1>
+        <p className="header-sub">Tap any syllable to hear its tones</p>
       </header>
 
       {/* Tab bar */}
@@ -179,7 +204,14 @@ export default function App() {
       {activeTab === 'chart' && (
         <>
           <div className="controls-bar">
-            <SearchBar value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <SearchBar
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              searchMode={searchMode}
+              onSearchModeChange={setSearchMode}
+              nonMatchBehavior={nonMatchBehavior}
+              onNonMatchBehaviorChange={setNonMatchBehavior}
+            />
             <ClickModeSwitch mode={clickMode} onChange={setClickMode} />
           </div>
 
@@ -207,15 +239,26 @@ export default function App() {
                       const cellKey = `${ini}|${fin}`;
                       const data = CELLS[cellKey];
                       const syl = data ? data.syl : '';
-                      const matchesQuery = !isSearching ||
-                        syl.toLowerCase().includes(searchQuery.trim().toLowerCase());
+                      const matchesQuery = !isSearching || (() => {
+                        const q = searchQuery.trim().toLowerCase();
+                        if (!q) return true;
+                        if (searchMode === 'syllable' || searchMode === 'both') {
+                          if (syl.toLowerCase().includes(q)) return true;
+                        }
+                        if (searchMode === 'pinyin' || searchMode === 'both') {
+                          if (data && data.pins && data.pins.some(p => p && p.toLowerCase().includes(q))) return true;
+                        }
+                        return false;
+                      })();
                       const isIrreg = !!irregulars[syl];
                       return (
                         <SoundCell
                           key={fin}
                           cellKey={cellKey}
                           onTap={open}
-                          isDimmed={isSearching && !matchesQuery}
+                          isDimmed={isSearching && !matchesQuery && nonMatchBehavior === 'dim'}
+                          isHidden={isSearching && !matchesQuery && nonMatchBehavior === 'hide'}
+                          isMatched={isSearching && matchesQuery}
                           isIrregular={isIrreg}
                         />
                       );
@@ -224,6 +267,11 @@ export default function App() {
                 ))}
               </tbody>
             </table>
+            {isSearching && (
+              <div className="search-info">
+                Matched <strong>{matchCount}</strong> / {totalCells} syllables
+              </div>
+            )}
             <IrregularLegend />
           </div>
 

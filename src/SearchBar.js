@@ -1,50 +1,118 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { IconSearch, IconFilter, IconCheck, IconClose } from './icons';
 import './SearchBar.css';
+
+const SEARCH_MODES = ['Syllable', 'Pinyin', 'Both'];
+const NON_MATCH_OPTIONS = ['Dim', 'Hide'];
 
 const SearchBar = memo(function SearchBar({
   value = '',
   onChange,
   placeholder = 'Search syllables…',
+  searchMode = 'Both',
+  onSearchModeChange,
+  nonMatchBehavior = 'Dim',
+  onNonMatchBehaviorChange,
 }) {
+  const [showOptions, setShowOptions] = useState(false);
+
+  const handleClear = () => {
+    if (onChange) {
+      onChange({ target: { value: '' } });
+    }
+  };
+
   return (
-    <div className="search-bar">
-      <span className="search-icon" aria-hidden="true">🔍</span>
-      <input
-        type="text"
-        className="search-input"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        aria-label="Search syllables"
-        autoComplete="off"
-        spellCheck={false}
-      />
+    <div className="search-bar-wrapper">
+      <div className="search-bar">
+        <span className="search-icon" aria-hidden="true">
+          <IconSearch size={15} />
+        </span>
+        <input
+          type="text"
+          className="search-input"
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          aria-label="Search syllables"
+          autoComplete="off"
+          spellCheck={false}
+        />
+        <AnimatePresence>
+          {value && (
+            <motion.button
+              className="search-clear"
+              onClick={handleClear}
+              aria-label="Clear search"
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.15 }}
+              whileTap={{ scale: 0.85 }}
+            >
+              <IconClose size={12} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+        <motion.button
+          className={`search-filter-toggle ${showOptions ? 'active' : ''}`}
+          onClick={() => setShowOptions((v) => !v)}
+          aria-label="Toggle search options"
+          aria-expanded={showOptions}
+          whileTap={{ scale: 0.85 }}
+        >
+          <IconFilter size={14} />
+        </motion.button>
+        <span className="search-hint">use 'v' for 'ü'</span>
+      </div>
+
       <AnimatePresence>
-        {value && (
-          <motion.button
-            className="search-clear"
-            onClick={() => {
-              if (onChange) {
-                const nativeEvent = new Event('input', { bubbles: true });
-                Object.defineProperty(nativeEvent, 'target', {
-                  value: { value: '' },
-                });
-                onChange({ target: { value: '' } });
-              }
-            }}
-            aria-label="Clear search"
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.7 }}
-            transition={{ duration: 0.15 }}
-            whileTap={{ scale: 0.85 }}
+        {showOptions && (
+          <motion.div
+            className="search-options-panel"
+            initial={{ opacity: 0, y: -4, scaleY: 0.95 }}
+            animate={{ opacity: 1, y: 0, scaleY: 1 }}
+            exit={{ opacity: 0, y: -4, scaleY: 0.95 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            style={{ transformOrigin: 'top center' }}
           >
-            ✕
-          </motion.button>
+            <div className="search-options-section">
+              <span className="search-options-label">Search in</span>
+              <div className="search-options-group">
+                {SEARCH_MODES.map((mode) => (
+                  <button
+                    key={mode}
+                    className={`search-option-pill ${searchMode === mode ? 'active' : ''}`}
+                    onClick={() => onSearchModeChange?.(mode)}
+                    aria-pressed={searchMode === mode}
+                  >
+                    {searchMode === mode && <IconCheck size={10} />}
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="search-options-section">
+              <span className="search-options-label">Non-matches</span>
+              <div className="search-options-group">
+                {NON_MATCH_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    className={`search-option-pill ${nonMatchBehavior === opt ? 'active' : ''}`}
+                    onClick={() => onNonMatchBehaviorChange?.(opt)}
+                    aria-pressed={nonMatchBehavior === opt}
+                  >
+                    {nonMatchBehavior === opt && <IconCheck size={10} />}
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
-      <span className="search-hint">use 'v' for 'ü'</span>
     </div>
   );
 });

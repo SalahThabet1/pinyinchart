@@ -32,8 +32,8 @@
 }
 
 .learn-card--open {
-  border-color: rgba(196, 168, 130, 0.25);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  border-color: rgba(196, 168, 130, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* ---- Header ---- */
@@ -57,11 +57,11 @@
 }
 
 .learn-card-head:hover {
-  background: rgba(196, 168, 130, 0.04);
+  background: var(--bg-hover);
 }
 
 .learn-card-head:active {
-  background: rgba(139, 26, 26, 0.08);
+  background: rgba(192, 57, 43, 0.08);
 }
 
 .learn-card-title {
@@ -80,7 +80,7 @@
 
 .learn-card--open .learn-card-arrow {
   transform: rotate(180deg);
-  color: var(--sand);
+  color: var(--text-accent);
 }
 
 /* ---- Body (animated) ---- */
@@ -107,7 +107,7 @@
 }
 
 .learn-card-content strong {
-  color: var(--sand);
+  color: var(--text-accent);
   font-weight: 500;
 }
 
@@ -115,15 +115,15 @@
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 0.9em;
-  color: var(--sand-light);
-  background: rgba(196, 168, 130, 0.08);
+  color: var(--text-accent);
+  background: var(--highlight-bg);
   padding: 0.08em 0.35em;
   border-radius: 3px;
 }
 
 .learn-card-content em {
   font-style: italic;
-  color: var(--sand);
+  color: var(--text-accent);
 }
 
 /* ===== Sub-heading ===== */
@@ -178,7 +178,7 @@
   padding: 0.35rem 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-secondary);
   font-size: 0.75rem;
   line-height: 1.3;
   transition: border-color 0.2s ease;
@@ -191,7 +191,7 @@
 .group-badge-label {
   font-family: var(--font-serif);
   font-weight: 500;
-  color: var(--sand);
+  color: var(--text-accent);
   letter-spacing: 0.04em;
 }
 
@@ -217,21 +217,21 @@
   padding: 0.45rem 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
   line-height: 1.4;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .irreg-row:hover {
   border-color: rgba(196, 168, 130, 0.2);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-hover);
 }
 
 .irreg-syl {
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: 0.85rem;
-  color: var(--red-bright);
+  color: var(--text-accent);
 }
 
 .irreg-exp {
@@ -252,19 +252,19 @@
   font-family: var(--font-sans);
   font-size: 0.78rem;
   font-weight: 500;
-  color: var(--sand);
+  color: var(--text-accent);
   cursor: pointer;
   padding: 0.3rem 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
   transition: background 0.2s ease, border-color 0.2s ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 .irreg-more-summary:hover {
-  background: rgba(196, 168, 130, 0.08);
+  background: var(--bg-hover);
   border-color: rgba(196, 168, 130, 0.3);
 }
 
@@ -291,14 +291,14 @@
   padding: 0.55rem 0.65rem;
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
   font-size: 0.85rem;
   border-left: 3px solid var(--tone-color);
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .tone-demo-row:hover {
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-hover);
   border-color: rgba(196, 168, 130, 0.2);
 }
 

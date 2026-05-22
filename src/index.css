@@ -5,27 +5,27 @@
 }
 
 :root {
-  /* Brand palette */
-  --red: #8B1A1A;
+  /* FIH Heritage — Light Palette */
+  --red: #C0392B;
   --red-bright: #C0392B;
   --sand: #C4A882;
   --sand-light: #D9C5A8;
-  --beige: #F2EBE0;
-  --ink: #1C1410;
+  --ink: #1C1C1C;
+  --gold: #C39A3C;
 
   /* Functional tokens */
-  --bg-primary: #1C1410;
-  --bg-secondary: #261c17;
-  --bg-card: #2d221a;
+  --bg-primary: #FDF9F1;
+  --bg-secondary: #FBF7ED;
+  --bg-card: #FFFFFF;
   --bg-hover: rgba(196, 168, 130, 0.08);
-  --text-primary: #F2EBE0;
-  --text-secondary: rgba(196, 168, 130, 0.6);
-  --text-accent: #C4A882;
+  --text-primary: #1C1C1C;
+  --text-secondary: #8B7D72;
+  --text-accent: #C0392B;
   --tone-1: #C0392B;
   --tone-2: #D4A76A;
   --tone-3: #5B9E6F;
   --tone-4: #6B9FC4;
-  --border-color: rgba(196, 168, 130, 0.1);
+  --border-color: #E8DDD0;
   --radius: 6px;
 
   /* Typography */
@@ -43,6 +43,10 @@
 
   /* Reduced motion override */
   --anim-scale: 1;
+
+  /* Highlight for search matches */
+  --highlight-bg: rgba(192, 57, 43, 0.08);
+  --highlight-border: rgba(192, 57, 43, 0.3);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -55,6 +59,7 @@ html {
   font-size: 14px;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -66,6 +71,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   line-height: 1.6;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(192, 57, 43, 0.2);
+  color: var(--ink);
 }
 
 @media (min-width: 768px)  { html { font-size: 15px; } }

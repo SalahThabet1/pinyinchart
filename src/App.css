@@ -36,7 +36,7 @@
   font-weight: 500;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--sand);
+  color: var(--text-accent);
   opacity: 0.6;
   margin-bottom: 0.3rem;
 }
@@ -52,7 +52,7 @@
 .header-zh {
   font-family: var(--font-chinese);
   font-weight: 300;
-  color: var(--red-bright);
+  color: var(--text-accent);
   margin-right: 0.15em;
 }
 
@@ -98,17 +98,17 @@
 
 .tab-btn:hover {
   color: var(--text-primary);
-  background: rgba(196, 168, 130, 0.04);
+  background: var(--bg-hover);
 }
 
 .tab-btn:active {
-  background: rgba(196, 168, 130, 0.08);
+  background: var(--bg-hover);
 }
 
 .tab-btn--active {
-  color: var(--red-bright);
+  color: var(--text-accent);
   font-weight: 500;
-  background: rgba(139, 26, 26, 0.08);
+  background: rgba(192, 57, 43, 0.06);
 }
 
 .tab-btn--active::after {
@@ -183,14 +183,14 @@
 .col-head {
   top: 0;
   z-index: 3;
-  color: var(--sand);
+  color: var(--text-secondary);
   text-align: center;
 }
 
 .row-head {
   left: 0;
   z-index: 2;
-  color: var(--red-bright);
+  color: var(--text-accent);
   text-align: center;
   min-width: 2.5rem;
   font-weight: 500;
@@ -211,7 +211,7 @@
 
 /* Add subtle left border between groups (except first) */
 .group-header + .group-header {
-  border-left: 1px solid rgba(196, 168, 130, 0.12);
+  border-left: 1px solid var(--border-color);
 }
 
 /* ===== Cells ===== */
@@ -222,7 +222,7 @@
 }
 
 .cell--empty {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .cell-btn {
@@ -243,25 +243,45 @@
 }
 
 .cell-btn:hover {
-  background: rgba(196, 168, 130, 0.08);
-  color: var(--sand);
+  background: var(--bg-hover);
+  color: var(--text-accent);
 }
 
 .cell-btn:active {
-  background: rgba(139, 26, 26, 0.15);
-  color: var(--red-bright);
+  background: rgba(192, 57, 43, 0.1);
+  color: var(--text-accent);
 }
 
 /* ===== Dimmed cell (search filter) ===== */
 .cell-btn--dimmed {
-  opacity: 0.2;
+  opacity: 0.18;
   pointer-events: none;
+}
+
+/* ===== Matched cell (search highlight) ===== */
+.cell-btn--matched {
+  background: var(--highlight-bg);
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px var(--highlight-border);
+  font-weight: 500;
+  color: var(--text-accent);
+  position: relative;
+}
+
+.cell-btn--matched:hover {
+  background: rgba(192, 57, 43, 0.14);
+  box-shadow: 0 0 0 1.5px var(--highlight-border), 0 0 12px rgba(192, 57, 43, 0.08);
+}
+
+/* ===== Hidden cell ===== */
+.cell-btn--hidden {
+  display: none;
 }
 
 /* ===== Irregular cell ===== */
 .cell-btn--irregular {
-  font-weight: 600;
-  text-decoration: underline dotted var(--sand);
+  font-weight: 500;
+  text-decoration: underline dotted var(--text-accent);
   text-underline-offset: 2px;
 }
 
@@ -283,7 +303,7 @@
 
 .irregular-legend-dot {
   font-size: 0.55rem;
-  color: var(--sand);
+  color: var(--text-accent);
   opacity: 0.7;
 }
 
@@ -304,9 +324,9 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(28, 20, 16, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -358,8 +378,8 @@
 }
 
 .sheet-close:hover {
-  border-color: var(--sand);
-  color: var(--sand);
+  border-color: var(--text-accent);
+  color: var(--text-accent);
 }
 
 /* ===== Tone buttons ===== */
@@ -375,9 +395,9 @@
   align-items: center;
   gap: 0.15rem;
   padding: 1rem 0.5rem 0.8rem;
-  border: 1.5px solid rgba(196, 168, 130, 0.15);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-secondary);
   color: inherit;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, transform 0.12s;
@@ -399,12 +419,12 @@
 
 .tone-btn:hover {
   border-color: var(--c);
-  background: rgba(196, 168, 130, 0.06);
+  background: var(--bg-hover);
 }
 
 .tone-btn:active {
   transform: scale(0.96);
-  background: rgba(196, 168, 130, 0.12);
+  background: rgba(192, 57, 43, 0.12);
   border-color: var(--c);
 }
 
@@ -455,7 +475,7 @@
     max-width: 420px;
     padding-bottom: 1.5rem;
     border-top: 2px solid var(--red);
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
   }
 
   .sheet-grid {

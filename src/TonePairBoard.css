@@ -67,7 +67,7 @@
 .tp-slot {
   flex: 1;
   min-width: 0;
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-secondary);
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius);
   padding: 0.65rem 0.5rem 0.5rem;
@@ -75,7 +75,7 @@
 }
 
 .tp-slot:has(.tp-slot-head) {
-  border-color: rgba(196, 168, 130, 0.2);
+  border-color: rgba(196, 168, 130, 0.25);
 }
 
 .tp-slot--empty {
@@ -114,7 +114,7 @@
   justify-content: space-between;
   margin-bottom: 0.4rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid rgba(196, 168, 130, 0.07);
+  border-bottom: 1px solid rgba(196, 168, 130, 0.1);
 }
 
 .tp-syl {
@@ -130,7 +130,7 @@
   height: 1.4rem;
   border: none;
   border-radius: 50%;
-  background: rgba(196, 168, 130, 0.08);
+  background: var(--bg-hover);
   color: var(--text-secondary);
   font-size: 0.6rem;
   cursor: pointer;
@@ -141,8 +141,8 @@
 }
 
 .tp-clear:hover {
-  background: rgba(192, 57, 43, 0.2);
-  color: var(--red-bright);
+  background: rgba(192, 57, 43, 0.15);
+  color: var(--text-accent);
 }
 
 .tp-clear:active {
@@ -161,9 +161,9 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.4rem 0.3rem;
-  border: 1px solid rgba(196, 168, 130, 0.12);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.12);
+  background: var(--bg-secondary);
   color: inherit;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s ease;
@@ -186,7 +186,7 @@
 
 .tp-tone:hover {
   border-color: var(--c);
-  background: rgba(196, 168, 130, 0.06);
+  background: var(--bg-hover);
 }
 
 .tp-tone:active {
@@ -237,28 +237,28 @@
 }
 
 .tp-btn--rand {
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-secondary);
   color: var(--text-primary);
 }
 
 .tp-btn--rand:hover {
   border-color: var(--sand);
-  background: rgba(196, 168, 130, 0.08);
-  color: var(--sand);
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .tp-btn--play {
-  background: rgba(139, 26, 26, 0.25);
-  border-color: rgba(139, 26, 26, 0.35);
-  color: var(--red-bright);
+  background: rgba(192, 57, 43, 0.08);
+  border-color: rgba(192, 57, 43, 0.2);
+  color: var(--text-accent);
   position: relative;
   overflow: hidden;
 }
 
 .tp-btn--play:hover:not(:disabled) {
-  background: rgba(139, 26, 26, 0.4);
-  border-color: var(--red-bright);
-  color: #e05a4a;
+  background: rgba(192, 57, 43, 0.15);
+  border-color: var(--text-accent);
+  color: var(--text-accent);
 }
 
 .tp-btn--playing {
@@ -305,7 +305,7 @@
   padding: 0.3rem 0.5rem;
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
   color: var(--text-secondary);
   font-family: var(--font-serif);
   font-size: 0.7rem;
@@ -316,8 +316,8 @@
 }
 
 .tp-recent-row:hover {
-  background: rgba(196, 168, 130, 0.08);
-  border-color: rgba(196, 168, 130, 0.25);
+  background: var(--bg-hover);
+  border-color: var(--sand);
   color: var(--text-primary);
 }
 
