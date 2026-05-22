@@ -1,0 +1,74 @@
+/* ===== Cells ===== */
+.cell {
+  padding: 0;
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+}
+
+.cell--empty {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.cell-btn {
+  display: block;
+  width: 100%;
+  min-width: 2.8rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.25rem;
+  border: none;
+  background: none;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 300;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cell-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-accent);
+}
+
+.cell-btn:active {
+  background: rgba(192, 57, 43, 0.1);
+  color: var(--text-accent);
+}
+
+/* ===== Dimmed cell (search filter) ===== */
+.cell-btn--dimmed {
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+/* ===== Matched cell (search highlight) ===== */
+.cell-btn--matched {
+  background: rgba(192, 57, 43, 0.12);
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px var(--highlight-border), 0 0 14px rgba(192, 57, 43, 0.12);
+  font-weight: 600;
+  color: #C0392B;
+  position: relative;
+  z-index: 1;
+}
+
+.cell-btn--matched:hover {
+  background: rgba(192, 57, 43, 0.18);
+  box-shadow: 0 0 0 2px var(--highlight-border), 0 0 20px rgba(192, 57, 43, 0.18);
+}
+
+/* ===== Irregular cell ===== */
+.cell-btn--irregular {
+  font-weight: 500;
+  text-decoration: underline dotted var(--text-accent);
+  text-underline-offset: 2px;
+}
+
+@media (min-width: 1200px) {
+  .cell-btn {
+    min-width: 3.2rem;
+    font-size: 0.85rem;
+    padding: 0.55rem 0.35rem;
+  }
+}

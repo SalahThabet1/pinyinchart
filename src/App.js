@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, memo, useMemo } from 'react';
+import { motion, LayoutGroup, AnimatePresence } from 'framer-motion';
 import pinyinData from './pinyins.json';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
@@ -13,6 +14,13 @@ import './App.css';
 
 const mp3Url = id =>
   `https://tone.lib.msu.edu/tone/${id}/PROXY_MP3/download`;
+
+/* Light haptic feedback for mobile */
+function hapticFeedback() {
+  try {
+    if (navigator.vibrate) navigator.vibrate(10);
+  } catch (_) { /* ignore */ }
+}
 
 /* Display order: 1st, 2nd, 3rd, 4th.
    Data order per syllable is [4th, 2nd, 1st, 3rd] (indices 0-3). */
@@ -54,9 +62,22 @@ const SoundCell = memo(function SoundCell({ cellKey, onTap, isDimmed, isMatched,
     (isIrregular ? ' cell-btn--irregular' : '');
   return (
     <td className="cell">
-      <button className={cls} onClick={() => onTap(data.syl, data.pins)}>
+      <motion.button
+        className={cls}
+        onClick={() => onTap(data.syl, data.pins)}
+        layout
+        initial={false}
+        animate={{
+          opacity: isDimmed ? 0.15 : 1,
+          scale: isDimmed ? 0.85 : isMatched ? 1.04 : 1,
+        }}
+        transition={{
+          duration: 0.2,
+          ease: 'easeInOut',
+        }}
+      >
         {data.syl}
-      </button>
+      </motion.button>
     </td>
   );
 });
@@ -86,7 +107,10 @@ function ToneSheet({ syllable, pinyins, onPlay, onClose }) {
                 key={py}
                 className="tone-btn"
                 style={{ '--c': TONE_COLORS[displayIdx] }}
-                onClick={() => onPlay(py)}
+                onClick={() => {
+                  hapticFeedback();
+                  onPlay(py);
+                }}
               >
                 <span className="tone-num">{displayIdx + 1}</span>
                 <span className="tone-py">{py}</span>
@@ -142,6 +166,7 @@ export default function App() {
     const modeIndex = ['Show tones', 'T1', 'T2', 'T3', 'T4'].indexOf(clickMode);
     if (modeIndex > 0) {
       /* Direct tone play — skip the sheet */
+      hapticFeedback();
       const dataIdx = TONE_DISPLAY_ORDER[modeIndex - 1];
       const py = pins[dataIdx];
       if (!py) return;
@@ -160,6 +185,7 @@ export default function App() {
   const close = useCallback(() => setActive(null), []);
 
   const play = useCallback(py => {
+    hapticFeedback();
     const ids = pinyinData[py];
     if (!ids || !ids.length) return;
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
@@ -192,118 +218,130 @@ export default function App() {
   }, [searchQuery, searchMode, isSearching, totalCells, cellKeys]);
 
   return (
-    <div className="app">
-      <header className="header">
-        <div className="header-tag">Falafel in Hotpot</div>
-        <h1 className="header-title">pinyin chart</h1>
-        <p className="header-sub">Tap any syllable to hear its tones</p>
-      </header>
+    <LayoutGroup>
+      <div className="app">
+        <header className="header">
+          <div className="header-tag">Falafel in Hotpot</div>
+          <h1 className="header-title">pinyin chart</h1>
+          <p className="header-sub">Tap any syllable to hear its tones</p>
+        </header>
 
-      {/* Tab bar */}
-      <nav className="tab-bar" role="tablist" aria-label="View mode">
-        <button
-          className={'tab-btn' + (activeTab === 'chart' ? ' tab-btn--active' : '')}
-          role="tab"
-          aria-selected={activeTab === 'chart'}
-          onClick={() => setActiveTab('chart')}
-        >
-          Sound Table
-        </button>
-        <button
-          className={'tab-btn' + (activeTab === 'pairs' ? ' tab-btn--active' : '')}
-          role="tab"
-          aria-selected={activeTab === 'pairs'}
-          onClick={() => setActiveTab('pairs')}
-        >
-          Tone Pairs
-        </button>
-      </nav>
+        {/* Tab bar */}
+        <nav className="tab-bar" role="tablist" aria-label="View mode">
+          <button
+            className={'tab-btn' + (activeTab === 'chart' ? ' tab-btn--active' : '')}
+            role="tab"
+            aria-selected={activeTab === 'chart'}
+            onClick={() => setActiveTab('chart')}
+          >
+            Sound Table
+          </button>
+          <button
+            className={'tab-btn' + (activeTab === 'pairs' ? ' tab-btn--active' : '')}
+            role="tab"
+            aria-selected={activeTab === 'pairs'}
+            onClick={() => setActiveTab('pairs')}
+          >
+            Tone Pairs
+          </button>
+        </nav>
 
-      {activeTab === 'chart' && (
-        <>
-          <div className="controls-bar">
-            <SearchBar
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              searchMode={searchMode}
-              onSearchModeChange={setSearchMode}
-            />
-            <ClickModeSwitch mode={clickMode} onChange={setClickMode} />
-          </div>
+        {activeTab === 'chart' && (
+          <>
+            <div className="controls-bar">
+              <SearchBar
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                searchMode={searchMode}
+                onSearchModeChange={setSearchMode}
+              />
+              <ClickModeSwitch mode={clickMode} onChange={setClickMode} />
+            </div>
 
-          <div className="table-wrap">
-            <table className="sound-table">
-              <thead>
-                <tr>
-                  <th className="th corner" />
-                  {FINAL_GROUPS.map(group => (
-                    <th
-                      key={group.label}
-                      className="th col-head group-header"
-                      colSpan={group.finals.length}
-                    >
-                      {group.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {INITIALS.map(ini => (
-                  <tr key={ini}>
-                    <th className="th row-head">{ini}</th>
-                    {FINALS.map(fin => {
-                      const cellKey = `${ini}|${fin}`;
-                      const data = CELLS[cellKey];
-                      const syl = data ? data.syl : '';
-                      const matchesQuery = !isSearching || (() => {
-                        const q = searchQuery.trim().toLowerCase();
-                        if (!q) return true;
-                        if (searchMode === 'syllable' || searchMode === 'both') {
-                          if (syl.toLowerCase().includes(q)) return true;
-                        }
-                        if (searchMode === 'pinyin' || searchMode === 'both') {
-                          if (data && data.pins && data.pins.some(p => p && p.toLowerCase().includes(q))) return true;
-                        }
-                        return false;
-                      })();
-                      const isIrreg = !!irregulars[syl];
-                      return (
-                        <SoundCell
-                          key={fin}
-                          cellKey={cellKey}
-                          onTap={open}
-                          isDimmed={isSearching && !matchesQuery}
-                          isMatched={isSearching && matchesQuery}
-                          isIrregular={isIrreg}
-                        />
-                      );
-                    })}
+            <div className="table-wrap">
+              <table className="sound-table">
+                <thead>
+                  <tr>
+                    <th className="th corner" />
+                    {FINAL_GROUPS.map(group => (
+                      <th
+                        key={group.label}
+                        className="th col-head group-header"
+                        colSpan={group.finals.length}
+                      >
+                        {group.label}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {isSearching && (
-              <div className="search-info">
-                Matched <strong>{matchCount}</strong> / {totalCells} syllables
-              </div>
-            )}
-            <IrregularCard />
-          </div>
+                </thead>
+                <AnimatePresence>
+                  <tbody>
+                    {INITIALS.map(ini => (
+                      <tr key={ini}>
+                        <th className="th row-head">{ini}</th>
+                        {FINALS.map(fin => {
+                          const cellKey = `${ini}|${fin}`;
+                          const data = CELLS[cellKey];
+                          const syl = data ? data.syl : '';
+                          const matchesQuery = !isSearching || (() => {
+                            const q = searchQuery.trim().toLowerCase();
+                            if (!q) return true;
+                            if (searchMode === 'syllable' || searchMode === 'both') {
+                              if (syl.toLowerCase().includes(q)) return true;
+                            }
+                            if (searchMode === 'pinyin' || searchMode === 'both') {
+                              if (data && data.pins && data.pins.some(p => p && p.toLowerCase().includes(q))) return true;
+                            }
+                            return false;
+                          })();
+                          const isIrreg = !!irregulars[syl];
+                          return (
+                            <SoundCell
+                              key={fin}
+                              cellKey={cellKey}
+                              onTap={open}
+                              isDimmed={isSearching && !matchesQuery}
+                              isMatched={isSearching && matchesQuery}
+                              isIrregular={isIrreg}
+                            />
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </AnimatePresence>
+              </table>
+              <AnimatePresence>
+                {isSearching && (
+                  <motion.div
+                    className="search-info"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    Matched <strong>{matchCount}</strong> / {totalCells} syllables
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <IrregularCard />
+            </div>
 
-          <LearnSection />
-        </>
-      )}
+            <LearnSection />
+          </>
+        )}
 
-      {activeTab === 'pairs' && <TonePairBoard />}
+        {activeTab === 'pairs' && <TonePairBoard />}
 
-      {active && (
-        <ToneSheet
-          syllable={active.syl}
-          pinyins={active.pins}
-          onPlay={play}
-          onClose={close}
-        />
-      )}
-    </div>
+        {active && (
+          <ToneSheet
+            syllable={active.syl}
+            pinyins={active.pins}
+            onPlay={play}
+            onClose={close}
+          />
+        )}
+      </div>
+    </LayoutGroup>
   );
 }

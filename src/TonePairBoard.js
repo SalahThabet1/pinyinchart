@@ -14,6 +14,13 @@ const TONE_DISPLAY_ORDER = [2, 1, 3, 0]; // data[2]=1st, data[1]=2nd, data[3]=3r
 const TONE_COLORS = ['var(--tone-1)', 'var(--tone-2)', 'var(--tone-3)', 'var(--tone-4)'];
 const MAX_RECENT = 5;
 
+/* Light haptic feedback for mobile */
+function hapticFeedback() {
+  try {
+    if (navigator.vibrate) navigator.vibrate(10);
+  } catch (_) { /* ignore */ }
+}
+
 const INITIALS = [
   '∅','b','p','m','f','d','t','n','l','g','k','h',
   'j','q','x','zh','ch','sh','r','z','c','s',
@@ -231,6 +238,7 @@ export default function TonePairBoard() {
 
   /* Play a single tone */
   const playTone = useCallback((py) => {
+    hapticFeedback();
     const ids = pinyinData[py];
     if (!ids || !ids.length) return;
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
@@ -242,6 +250,7 @@ export default function TonePairBoard() {
   /* Play both slots sequentially */
   const playBoth = useCallback(async () => {
     if (!slot1 && !slot2) return;
+    hapticFeedback();
     setPlayingBoth(true);
 
     const pickPy = (pins) => pins[TONE_DISPLAY_ORDER[0]] || pins[TONE_DISPLAY_ORDER.find(i => pins[i])];
