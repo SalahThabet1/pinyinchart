@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/pinyinchart/static/css/main.c40b352f.css",
-    "main.js": "/pinyinchart/static/js/main.77c41ece.js",
+    "main.css": "/pinyinchart/static/css/main.f39bee2a.css",
+    "main.js": "/pinyinchart/static/js/main.f6204d30.js",
     "index.html": "/pinyinchart/index.html",
-    "main.c40b352f.css.map": "/pinyinchart/static/css/main.c40b352f.css.map",
-    "main.77c41ece.js.map": "/pinyinchart/static/js/main.77c41ece.js.map"
+    "main.f39bee2a.css.map": "/pinyinchart/static/css/main.f39bee2a.css.map",
+    "main.f6204d30.js.map": "/pinyinchart/static/js/main.f6204d30.js.map"
   },
   "entrypoints": [
-    "static/css/main.c40b352f.css",
-    "static/js/main.77c41ece.js"
+    "static/css/main.f39bee2a.css",
+    "static/js/main.f6204d30.js"
   ]
 }
