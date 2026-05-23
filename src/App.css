@@ -58,6 +58,7 @@
 }
 
 /* ===== Tab Bar ===== */
+/* v2: active tab specificity fix */
 .tab-bar {
   display: flex;
   gap: 0.35rem;
