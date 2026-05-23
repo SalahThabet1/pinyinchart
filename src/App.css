@@ -6,46 +6,6 @@
   flex-direction: column;
 }
 
-/* ===== Header ===== */
-.header {
-  text-align: center;
-  padding: 0.7rem 0.75rem 0.5rem;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-  position: relative;
-  z-index: 10;
-}
-
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 2px;
-  background: var(--red);
-  border-radius: 1px;
-}
-
-.header-title {
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
-  font-weight: 300;
-  letter-spacing: 0.04em;
-  color: var(--text-primary);
-}
-
-.header-sub {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.65rem;
-  font-weight: 300;
-  color: var(--text-secondary);
-  margin-top: 0.1rem;
-  letter-spacing: 0.02em;
-}
-
 /* ===== Tab Bar ===== */
 /* v2: active tab specificity fix */
 .tab-bar {
@@ -338,23 +298,6 @@
 
 /* ===== Desktop ===== */
 @media (min-width: 768px) {
-  .header {
-    padding: 1.5rem 2rem 1.1rem;
-  }
-
-  .header-tag {
-    font-size: 0.55rem;
-    margin-bottom: 0.3rem;
-  }
-
-  .header-title {
-    font-size: 1.75rem;
-  }
-
-  .header-sub {
-    font-size: 0.72rem;
-    margin-top: 0.2rem;
-  }
 
   .tab-btn {
     font-size: 0.85rem;

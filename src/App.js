@@ -271,11 +271,6 @@ export default function App() {
 
   return (
     <div className="app">
-        <header className="header">
-          <h1 className="header-title">pinyin chart</h1>
-          <p className="header-sub">Tap any syllable to hear its tones</p>
-        </header>
-
         {/* Tab bar */}
         <nav className="tab-bar" role="tablist" aria-label="View mode">
           <button
@@ -384,6 +379,17 @@ export default function App() {
         {activeTab === 'pairs' && <TonePairBoard />}
 
         {activeTab === 'learn' && <LearnSection />}
+
+        {/* ── Footer (all tabs) ── */}
+        <div className="lp-footer">
+          <p>
+            Audio by <a href="https://github.com/hugolpz/audio-cmn" target="_blank" rel="noopener noreferrer">Hugo (Chen Wang / Yue Tan)</a> (CC-BY-SA)
+            &middot; Words from HSK 2012 &middot; Dictionary data from <a href="https://cc-cedict.org" target="_blank" rel="noopener noreferrer">CC-CEDICT</a> (CC-BY-SA 4.0)
+          </p>
+          <p className="lp-footer-copy">
+            All rights reserved &middot; Trademark falafelinhotpot.com
+          </p>
+        </div>
 
         {active && (
           <ToneSheet
