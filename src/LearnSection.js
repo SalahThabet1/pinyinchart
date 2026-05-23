@@ -569,9 +569,11 @@ export default function LearnSection() {
         <FadeIn delay={0.45}>
           <div className="lp-footer">
             <p>
-              <strong>Falafel in Hotpot</strong> — Pinyin Chart v2 &middot;
               Audio by <a href="https://github.com/hugolpz/audio-cmn" target="_blank" rel="noopener noreferrer">Hugo (Chen Wang / Yue Tan)</a> (CC-BY-SA)
               &middot; Words from HSK 2012 &middot; Dictionary data from <a href="https://cc-cedict.org" target="_blank" rel="noopener noreferrer">CC-CEDICT</a> (CC-BY-SA 4.0)
+            </p>
+            <p className="lp-footer-copy">
+              All rights reserved &middot; Trademark falafelinhotpot.com
             </p>
           </div>
         </FadeIn>

@@ -177,6 +177,12 @@
   line-height: 1.6;
 }
 
+.lp-footer-copy {
+  font-size: 0.6rem !important;
+  opacity: 0.4 !important;
+  margin-top: 0.3rem;
+}
+
 .lp-footer a {
   color: var(--text-accent);
   text-decoration: none;
