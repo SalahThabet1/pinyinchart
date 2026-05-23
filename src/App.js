@@ -243,7 +243,7 @@ export default function App() {
             aria-selected={activeTab === 'pairs'}
             onClick={() => setActiveTab('pairs')}
           >
-            Tone Pairs
+            Tone Sandhi
           </button>
         </nav>
 
