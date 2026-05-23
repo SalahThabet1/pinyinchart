@@ -2,7 +2,67 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import irregulars from './irregulars.json';
 import { FINAL_GROUPS } from './finalsGroups';
+import {
+  IconMusic, IconPuzzle, IconBook,
+  IconTable, IconTarget, IconAlert,
+  IconTrending, IconRefresh
+} from './icons';
 import './LearnSection.css';
+
+/* ── Irregular groupings by phonetic category ── */
+const IRREG_GROUPS = [
+  {
+    label: 'Apical Vowels (舌尖音)',
+    desc: 'The letter "i" sounds completely different — no front vowel, just a sustained buzz.',
+    keys: ['zi', 'ci', 'si', 'zhi', 'chi', 'shi', 'ri'],
+  },
+  {
+    label: 'Ü Rule — Written "u", Spoken "ü"',
+    desc: 'After j, q, x, and y, the letter "u" actually represents the rounded front vowel [y] (like German ü). The umlaut is omitted in writing.',
+    keys: ['ju', 'qu', 'xu', 'juan', 'quan', 'xuan', 'jun', 'qun', 'xun', 'jue', 'que', 'xue', 'yuan', 'yue', 'yun'],
+  },
+  {
+    label: 'Vowel Quality Shifts',
+    desc: 'The letters "e" and "a" take unexpected values in certain environments.',
+    keys: ['ye', 'yan', 'yin', 'ying'],
+  },
+  {
+    label: 'Hidden Glides',
+    desc: 'Compound finals conceal an extra vowel that surfaces in careful speech.',
+    keys: ['iu', 'ui', 'un'],
+  },
+  {
+    label: 'Labial + "o" → [wo]',
+    desc: 'A [w] glide is inserted between labial initials (b, p, m, f) and "o".',
+    keys: ['bo', 'po', 'mo', 'fo', 'lo', 'yo'],
+  },
+  {
+    label: 'Eng as [əŋ]',
+    desc: 'The "eng" final is pronounced with a schwa [ə], not a front [e].',
+    keys: ['beng', 'peng', 'weng', 'yong'],
+  },
+  {
+    label: 'Syllabic Nasals',
+    desc: 'Standalone nasal consonants used as interjections — no vowel at all.',
+    keys: ['m', 'n', 'ng', 'hm', 'hng'],
+  },
+  {
+    label: 'Rare / Exceptional',
+    desc: 'Uncommon syllables that break standard initial-final constraints.',
+    keys: ['dia', 'nun', 'bia'],
+  },
+];
+
+/* ── Section Divider ── */
+function SectionSplit({ label }) {
+  return (
+    <div className="lp-split">
+      <span className="lp-split-line" />
+      {label && <span className="lp-split-label">{label}</span>}
+      <span className="lp-split-line" />
+    </div>
+  );
+}
 
 /* ── Fade-in wrapper for sections ── */
 function FadeIn({ children, delay = 0 }) {
@@ -22,14 +82,13 @@ function FadeIn({ children, delay = 0 }) {
 function ToneChartSVG() {
   const tones = [
     { num: '1st', label: 'high level', color: 'var(--tone-1)', path: 'M20,20 L220,20' },
-    { num: '2nd', label: 'rising', color: 'var(--tone-2)', path: 'M20,60 Q120,20 220,20' },
-    { num: '3rd', label: 'dipping', color: 'var(--tone-3)', path: 'M20,40 Q120,100 220,40' },
-    { num: '4th', label: 'falling', color: 'var(--tone-4)', path: 'M20,20 Q120,60 220,100' },
+    { num: '2nd', label: 'rising',     color: 'var(--tone-2)', path: 'M20,60 Q120,20 220,20' },
+    { num: '3rd', label: 'dipping',    color: 'var(--tone-3)', path: 'M20,40 Q120,100 220,40' },
+    { num: '4th', label: 'falling',    color: 'var(--tone-4)', path: 'M20,20 Q120,60 220,100' },
   ];
   return (
     <div className="tone-chart-wrap">
       <svg viewBox="0 0 240 120" className="tone-chart-svg" aria-label="Tone contour chart">
-        {/* Grid lines */}
         {[20, 40, 60, 80, 100].map(y => (
           <line key={y} x1="16" y1={y} x2="224" y2={y} stroke="var(--border-color)" strokeWidth="0.5" opacity="0.4" />
         ))}
@@ -41,22 +100,12 @@ function ToneChartSVG() {
               stroke={t.color}
               strokeWidth="2.5"
               strokeLinecap="round"
-              strokeLinejoin="round"
               initial={{ pathLength: 0, opacity: 0 }}
               whileInView={{ pathLength: 1, opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: 'easeOut', delay: i * 0.15 }}
             />
-            <motion.circle
-              cx={t.path.match(/,(\d+) L/)?.[1] ? '220' : '20'}
-              cy={t.path.match(/M(\d+),(\d+)/)?.[2] || '20'}
-              r="3"
-              fill={t.color}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.8 + i * 0.15 }}
-            />
+            <circle cx={i < 2 ? 20 : 220} cy={i === 0 ? 20 : i === 1 ? 20 : i === 2 ? 40 : 100} r="3" fill={t.color} />
           </g>
         ))}
       </svg>
@@ -88,13 +137,13 @@ function SyllableDiagram() {
           <div className="syll-block-box" style={{ background: 'var(--tone-4)', opacity: 0.9 }}>b</div>
           <div className="syll-block-desc">starting consonant</div>
         </motion.div>
-        <motion.div
+        <motion.span
           className="syll-plus"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-        >+</motion.div>
+        >+</motion.span>
         <motion.div
           className="syll-block"
           initial={{ opacity: 0, y: 10 }}
@@ -106,13 +155,13 @@ function SyllableDiagram() {
           <div className="syll-block-box" style={{ background: 'var(--tone-2)', opacity: 0.9 }}>a</div>
           <div className="syll-block-desc">vowel / ending</div>
         </motion.div>
-        <motion.div
+        <motion.span
           className="syll-plus"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.35 }}
-        >+</motion.div>
+        >+</motion.span>
         <motion.div
           className="syll-block"
           initial={{ opacity: 0, y: 10 }}
@@ -124,7 +173,7 @@ function SyllableDiagram() {
           <div className="syll-block-box" style={{ background: 'var(--tone-1)', opacity: 0.9 }}>˥</div>
           <div className="syll-block-desc">pitch contour</div>
         </motion.div>
-        <motion.div
+        <motion.span
           className="syll-eq"
           initial={{ opacity: 0, scale: 0 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -132,7 +181,7 @@ function SyllableDiagram() {
           transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
         >
           <span className="syll-eq-box">bā</span>
-        </motion.div>
+        </motion.span>
       </div>
     </div>
   );
@@ -163,7 +212,7 @@ function FinalsTable() {
 }
 
 /* ── Pronunciation group card ── */
-function PronGroup({ icon, title, rows }) {
+function PronGroup({ icon: IconComp, title, rows }) {
   return (
     <motion.div
       className="pron-group"
@@ -173,7 +222,7 @@ function PronGroup({ icon, title, rows }) {
       transition={{ duration: 0.3 }}
     >
       <div className="pron-group-head">
-        <span className="pron-icon">{icon}</span>
+        {IconComp && <IconComp size={18} />}
         <span className="pron-title">{title}</span>
       </div>
       <div className="pron-group-rows">
@@ -209,29 +258,36 @@ function ToneDemoRow({ mark, num, label, example, meaning, color, delay }) {
   );
 }
 
-/* ── Irregular row ── */
-function IrregularRow({ syl, explanation }) {
+/* ── Irregular group display ── */
+function IrregularGroup({ group }) {
   return (
     <motion.div
-      className="irreg-row"
-      initial={{ opacity: 0, y: 6 }}
+      className="irreg-group-card"
+      initial={{ opacity: 0, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.3 }}
     >
-      <code className="irreg-syl">{syl}</code>
-      <span className="irreg-exp">{explanation}</span>
+      <h4 className="irreg-group-head">{group.label}</h4>
+      <p className="irreg-group-desc">{group.desc}</p>
+      <div className="irreg-group-rows">
+        {group.keys.map(k => (
+          <div key={k} className="irreg-row">
+            <code className="irreg-syl">{k}</code>
+            <span className="irreg-exp">{irregulars[k]}</span>
+          </div>
+        ))}
+      </div>
     </motion.div>
   );
 }
 
 /* ── Main Learn Component ── */
 export default function LearnSection() {
-  const irregKeys = Object.keys(irregulars);
-
   return (
     <div className="learn-page">
       <div className="learn-page-inner">
+
         {/* ── Header ── */}
         <FadeIn>
           <div className="lp-header">
@@ -239,16 +295,19 @@ export default function LearnSection() {
             <h2 className="lp-title">Learning Mandarin Pinyin</h2>
             <p className="lp-sub">
               A quick reference to the sounds, tones, and pronunciation rules
-              behind Standard Mandarin's romanization system.
+              behind Standard Mandarin's romanisation system.
             </p>
           </div>
         </FadeIn>
+
+        <SectionSplit label="Tones &amp; Sounds" />
 
         {/* ── Tone Contour Chart ── */}
         <FadeIn delay={0.1}>
           <section className="lp-section">
             <h3 className="lp-h">
-              <span className="lp-h-icon">🎵</span> The Four Tones at a Glance
+              <IconMusic size={22} />
+              The Four Tones at a Glance
             </h3>
             <p className="lp-body">
               Mandarin uses pitch contours to distinguish word meanings.
@@ -258,11 +317,14 @@ export default function LearnSection() {
           </section>
         </FadeIn>
 
+        <SectionSplit />
+
         {/* ── Syllable Structure ── */}
         <FadeIn delay={0.15}>
           <section className="lp-section">
             <h3 className="lp-h">
-              <span className="lp-h-icon">🧩</span> How a Syllable Is Built
+              <IconPuzzle size={22} />
+              How a Syllable Is Built
             </h3>
             <p className="lp-body">
               Every Mandarin syllable is composed of three parts:
@@ -276,11 +338,14 @@ export default function LearnSection() {
           </section>
         </FadeIn>
 
+        <SectionSplit />
+
         {/* ── Finals Table ── */}
         <FadeIn delay={0.2}>
           <section className="lp-section">
             <h3 className="lp-h">
-              <span className="lp-h-icon">📋</span> Finals by Starting Vowel
+              <IconTable size={22} />
+              Finals by Starting Vowel
             </h3>
             <p className="lp-body">
               The finals (vowel or vowel–consonant endings) group naturally by
@@ -290,11 +355,14 @@ export default function LearnSection() {
           </section>
         </FadeIn>
 
+        <SectionSplit label="Pronunciation" />
+
         {/* ── Tricky Sounds ── */}
         <FadeIn delay={0.25}>
           <section className="lp-section">
             <h3 className="lp-h">
-              <span className="lp-h-icon">🎯</span> Tricky Sounds
+              <IconTarget size={22} />
+              Tricky Sounds
             </h3>
             <p className="lp-body">
               These three consonant groups give English speakers the most
@@ -302,7 +370,7 @@ export default function LearnSection() {
             </p>
             <div className="pron-groups">
               <PronGroup
-                icon="🦷"
+                icon={IconBook}
                 title="Alveolo-palatal (j / q / x)"
                 rows={[
                   { code: 'j', desc: 'unaspirated, like "jeep" with flatter tongue', aspiration: 'no puff' },
@@ -311,7 +379,7 @@ export default function LearnSection() {
                 ]}
               />
               <PronGroup
-                icon="🔊"
+                icon={IconBook}
                 title="Retroflex (zh / ch / sh / r)"
                 rows={[
                   { code: 'zh', desc: 'unaspirated, like "j" with curled tongue', aspiration: 'no puff' },
@@ -321,7 +389,7 @@ export default function LearnSection() {
                 ]}
               />
               <PronGroup
-                icon="👅"
+                icon={IconBook}
                 title="Dental / Flat (z / c / s)"
                 rows={[
                   { code: 'z', desc: 'unaspirated, like "dz" in "adze"', aspiration: 'no puff' },
@@ -333,41 +401,34 @@ export default function LearnSection() {
           </section>
         </FadeIn>
 
-        {/* ── Irregular Pronunciations ── */}
+        <SectionSplit />
+
+        {/* ── Irregular Pronunciations (grouped, no toggle) ── */}
         <FadeIn delay={0.3}>
           <section className="lp-section">
             <h3 className="lp-h">
-              <span className="lp-h-icon">⚠️</span> Irregular Pronunciations
+              <IconAlert size={22} />
+              Irregular Pronunciations
             </h3>
             <p className="lp-body">
               Several pinyin syllables don't follow the expected sound rules
-              from their spelling. These are the ones to watch out for:
+              from their spelling. These are grouped by phonetic theme —
+              all visible, no toggles.
             </p>
-            <div className="irreg-grid">
-              {irregKeys.slice(0, 24).map(k => (
-                <IrregularRow key={k} syl={k} explanation={irregulars[k]} />
-              ))}
-            </div>
-            {irregKeys.length > 24 && (
-              <details className="irreg-more">
-                <summary className="irreg-more-summary">
-                  Show {irregKeys.length - 24} more
-                </summary>
-                <div className="irreg-grid">
-                  {irregKeys.slice(24).map(k => (
-                    <IrregularRow key={k} syl={k} explanation={irregulars[k]} />
-                  ))}
-                </div>
-              </details>
-            )}
+            {IRREG_GROUPS.map(g => (
+              <IrregularGroup key={g.label} group={g} />
+            ))}
           </section>
         </FadeIn>
 
-        {/* ── The 4 Tones Detalied ── */}
+        <SectionSplit label="Tone Rules" />
+
+        {/* ── The 4 Tones in Detail ── */}
         <FadeIn delay={0.35}>
           <section className="lp-section">
             <h3 className="lp-h">
-              <span className="lp-h-icon">📈</span> The 4 Tones in Detail
+              <IconTrending size={22} />
+              The 4 Tones in Detail
             </h3>
             <p className="lp-body">
               The same syllable spoken at different pitches means completely
@@ -388,18 +449,21 @@ export default function LearnSection() {
               tones played aloud. The colour coding matches this guide.
             </p>
             <aside className="lp-callout">
-              <strong>🎧 Tip:</strong> Use the <strong>Tone Sandhi</strong> tab to explore
+              <IconBook size={16} /> <strong>Tip:</strong> Use the <strong>Tone Sandhi</strong> tab to explore
               two-syllable words. Each cell shows real HSK vocabulary for that
               tone combination — tap to hear the full word.
             </aside>
           </section>
         </FadeIn>
 
+        <SectionSplit />
+
         {/* ── Tone Sandhi ── */}
         <FadeIn delay={0.4}>
           <section className="lp-section">
             <h3 className="lp-h">
-              <span className="lp-h-icon">🔄</span> Tone Sandhi
+              <IconRefresh size={22} />
+              Tone Sandhi
             </h3>
             <p className="lp-body">
               In natural speech, tones shift depending on neighbouring syllables.
