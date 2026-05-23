@@ -28,17 +28,6 @@
   border-radius: 1px;
 }
 
-.header-tag {
-  font-family: var(--font-sans);
-  font-size: 0.48rem;
-  font-weight: 500;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--text-accent);
-  opacity: 0.6;
-  margin-bottom: 0.15rem;
-}
-
 .header-title {
   font-family: var(--font-serif);
   font-size: 1.25rem;

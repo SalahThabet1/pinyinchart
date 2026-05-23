@@ -2,7 +2,7 @@
   "name": "pinyin-chart-falafel-in-hotpot",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://SalahThabet1.github.io/pinyinchart",
+  "homepage": ".",
   "dependencies": {
     "framer-motion": "^12.40.0",
     "react": "^18.3.1",

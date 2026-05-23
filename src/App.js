@@ -272,7 +272,6 @@ export default function App() {
   return (
     <div className="app">
         <header className="header">
-          <div className="header-tag">Falafel in Hotpot</div>
           <h1 className="header-title">pinyin chart</h1>
           <p className="header-sub">Tap any syllable to hear its tones</p>
         </header>
