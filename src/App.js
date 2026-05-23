@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, memo, useMemo } from 'react';
+import React, { useState, useCallback, useRef, memo, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
@@ -215,6 +215,21 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('chart');
   const [searchMode, setSearchMode] = useState('syllable'); // 'syllable' | 'pinyin' | 'both'
   const audioRef = useRef(null);
+  const tableWrapRef = useRef(null);
+
+  // Toggle scroll indicator on Sound Table
+  useEffect(() => {
+    const el = tableWrapRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const atRight = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+      el.classList.toggle('scrolled-right', atRight);
+    };
+    el.addEventListener('scroll', onScroll);
+    // Check initial state
+    onScroll();
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
 
   const open = useCallback((syl, pins) => {
     const modeIndex = ['Show tones', 'T1', 'T2', 'T3', 'T4'].indexOf(clickMode);
@@ -314,7 +329,7 @@ export default function App() {
               <ClickModeSwitch mode={clickMode} onChange={setClickMode} />
             </div>
 
-            <div className="table-wrap">
+            <div className="table-wrap" ref={tableWrapRef}>
               <table className="sound-table">
                 <thead>
                   <tr>
@@ -383,7 +398,7 @@ export default function App() {
         {/* ── Footer (all tabs) ── */}
         <div className="lp-footer">
           <p>
-            Audio by <a href="https://github.com/hugolpz/audio-cmn" target="_blank" rel="noopener noreferrer">Hugo (Chen Wang / Yue Tan)</a> (CC-BY-SA)
+            Audio by <a href="https://github.com/cmguo/PinYinSound" target="_blank" rel="noopener noreferrer">cmguo</a> + <a href="https://github.com/hugolpz/audio-cmn" target="_blank" rel="noopener noreferrer">Hugo</a> (CC-BY-SA)
             &middot; Words from HSK 2012 &middot; Dictionary data from <a href="https://cc-cedict.org" target="_blank" rel="noopener noreferrer">CC-CEDICT</a> (CC-BY-SA 4.0)
           </p>
           <p className="lp-footer-copy">

@@ -146,6 +146,7 @@ export default function TonePairBoard() {
 
   return (
     <div className="tp-wrapper">
+      <div className="tp-scroll-container">
       <motion.div
         className="tp-board"
         initial={{ opacity: 0, y: 10 }}
@@ -219,6 +220,7 @@ export default function TonePairBoard() {
           <span className="tp-legend-item tp-legend-sandhi">⚡ 3-3 sandhi</span>
         </div>
       </motion.div>
+      </div>
 
       <AnimatePresence>
         {popupPair && (

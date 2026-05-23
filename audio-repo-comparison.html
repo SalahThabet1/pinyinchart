@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinyin Audio Repo Comparison — David vs Hugo</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e4e4e7;
+    --muted: #71717a;
+    --david: #60a5fa;
+    --hugo: #f472b6;
+    --overlap: #a78bfa;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --red: #f87171;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 2rem; line-height: 1.5; }
+  h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+  .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+  
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+  .card h2 { font-size: 1rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+  .card .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .card .big { font-size: 2rem; font-weight: 700; }
+  .card .label { color: var(--muted); font-size: 0.8rem; }
+  
+  .stat-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--muted); font-size: 0.85rem; }
+  .stat-value { font-weight: 600; font-size: 0.9rem; }
+  
+  .venn { display: flex; justify-content: center; align-items: center; gap: 2rem; margin: 2rem 0; flex-wrap: wrap; }
+  .venn-item { text-align: center; }
+  .venn-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 0.5rem; }
+  .venn-circle .num { font-size: 1.5rem; font-weight: 700; }
+  .venn-circle .txt { font-size: 0.7rem; color: var(--muted); }
+  .venn-david .venn-circle { background: rgba(96,165,250,0.15); border: 2px solid var(--david); }
+  .venn-hugo .venn-circle { background: rgba(244,114,182,0.15); border: 2px solid var(--hugo); }
+  .venn-overlap .venn-circle { background: rgba(167,139,250,0.15); border: 2px solid var(--overlap); }
+  
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid var(--border); color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+  td { padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.7rem; font-weight: 600; }
+  .badge-david { background: rgba(96,165,250,0.15); color: var(--david); }
+  .badge-hugo { background: rgba(244,114,182,0.15); color: var(--hugo); }
+  .badge-both { background: rgba(167,139,250,0.15); color: var(--overlap); }
+  .badge-green { background: rgba(52,211,153,0.15); color: var(--green); }
+  
+  .section { margin-bottom: 2rem; }
+  .section h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+  
+  .file-list { max-height: 300px; overflow-y: auto; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.75rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; }
+  .file-list div { padding: 0.2rem 0; }
+  
+  .size-bar { display: flex; align-items: center; gap: 0.5rem; }
+  .size-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .size-bar-fill { height: 100%; border-radius: 3px; }
+  
+  .recommendation { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.3); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem; }
+  .recommendation h3 { color: var(--green); margin-bottom: 0.5rem; }
+  .recommendation ul { padding-left: 1.25rem; }
+  .recommendation li { margin-bottom: 0.35rem; font-size: 0.9rem; }
+  
+  .tone-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin: 1rem 0; }
+  .tone-cell { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; text-align: center; }
+  .tone-cell .tone { font-size: 1.25rem; font-weight: 700; }
+  .tone-cell .count { color: var(--muted); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<h1>Pinyin Audio Repo Comparison</h1>
+<p class="subtitle">David (davinfifield) vs Hugo (hugolpz/audio-cmn) — mapped via zispace/hanyu-pinyin-audio aggregator</p>
+
+<!-- Summary Cards -->
+<div class="grid">
+  <div class="card">
+    <h2><span class="dot" style="background:var(--david)"></span> David (davinfifield)</h2>
+    <div class="big" style="color:var(--david)">1,623</div>
+    <div class="label">MP3 files — syllable×tone recordings</div>
+    <div style="margin-top:0.75rem">
+      <div class="stat-row"><span class="stat-label">Total size</span><span class="stat-value">31.0 MB</span></div>
+      <div class="stat-row"><span class="stat-label">Avg file size</span><span class="stat-value">19.6 KB</span></div>
+      <div class="stat-row"><span class="stat-label">Naming</span><span class="stat-value">pinyin+tone (a1.mp3)</span></div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2><span class="dot" style="background:var(--hugo)"></span> Hugo (hugolpz/audio-cmn)</h2>
+    <div class="big" style="color:var(--hugo)">1,707</div>
+    <div class="label">MP3 files — 1,679 audio/ + 28 more/</div>
+    <div style="margin-top:0.75rem">
+      <div class="stat-row"><span class="stat-label">Total size (aggregator)</span><span class="stat-value">15.9 MB</span></div>
+      <div class="stat-row"><span class="stat-label">Avg file size</span><span class="stat-value">10.0 KB</span></div>
+      <div class="stat-row"><span class="stat-label">Naming</span><span class="stat-value">pinyin+tone (a1.mp3)</span></div>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h2><span class="dot" style="background:var(--overlap)"></span> Overlap</h2>
+    <div class="big" style="color:var(--overlap)">1,587</div>
+    <div class="label">Same filename in both repos</div>
+    <div style="margin-top:0.75rem">
+      <div class="stat-row"><span class="stat-label">David only</span><span class="stat-value" style="color:var(--david)">36 files</span></div>
+      <div class="stat-row"><span class="stat-label">Hugo only</span><span class="stat-value" style="color:var(--hugo)">120 files</span></div>
+      <div class="stat-row"><span class="stat-label">David avg bigger</span><span class="stat-value">+9.6 KB/file</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Venn -->
+<div class="venn">
+  <div class="venn-item venn-david">
+    <div class="venn-circle"><span class="num" style="color:var(--david)">36</span><span class="txt">David only</span></div>
+  </div>
+  <div class="venn-item venn-overlap">
+    <div class="venn-circle"><span class="num" style="color:var(--overlap)">1,587</span><span class="txt">Both</span></div>
+  </div>
+  <div class="venn-item venn-hugo">
+    <div class="venn-circle"><span class="num" style="color:var(--hugo)">120</span><span class="txt">Hugo only</span></div>
+  </div>
+</div>
+
+<!-- Tone Distribution -->
+<div class="section">
+  <h2>Tone Distribution</h2>
+  <div class="tone-grid">
+    <div class="tone-cell"><div class="tone" style="color:var(--david)">1st</div><div class="count">David: 245</div><div class="count">Hugo: 246</div></div>
+    <div class="tone-cell"><div class="tone" style="color:var(--david)">2nd</div><div class="count">David: 251</div><div class="count">Hugo: 245</div></div>
+    <div class="tone-cell"><div class="tone" style="color:var(--david)">3rd</div><div class="count">David: 252</div><div class="count">Hugo: 245</div></div>
+    <div class="tone-cell"><div class="tone" style="color:var(--david)">4th</div><div class="count">David: 250</div><div class="count">Hugo: 245</div></div>
+    <div class="tone-cell"><div class="tone" style="color:var(--amber)">5th</div><div class="count">David: 1</div><div class="count">Hugo: 19</div></div>
+  </div>
+  <p style="color:var(--muted); font-size:0.8rem; margin-top:0.5rem">Hugo has significantly more 5th-tone (neutral) recordings. David has more balanced 1-4 tone coverage.</p>
+</div>
+
+<!-- Size Comparison -->
+<div class="section">
+  <h2>Size Comparison — David files are ~2× larger on average</h2>
+  <p style="color:var(--muted); font-size:0.85rem; margin-bottom:0.75rem">David's recordings average 19.6 KB vs Hugo's 10.0 KB — suggesting higher bitrate or longer recordings.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>David</th><th>Hugo</th><th>Difference</th><th>Larger</th></tr></thead>
+      <tbody>
+        <tr><td>shou4.mp3</td><td>39.8 KB</td><td>10.0 KB</td><td>+29.9 KB</td><td><span class="badge badge-david">David</span></td></tr>
+        <tr><td>sao4.mp3</td><td>33.5 KB</td><td>8.8 KB</td><td>+24.7 KB</td><td><span class="badge badge-david">David</span></td></tr>
+        <tr><td>xue4.mp3</td><td>33.5 KB</td><td>9.6 KB</td><td>+24.0 KB</td><td><span class="badge badge-david">David</span></td></tr>
+        <tr><td>qiao4.mp3</td><td>33.5 KB</td><td>10.0 KB</td><td>+23.6 KB</td><td><span class="badge badge-david">David</span></td></tr>
+        <tr><td>shu4.mp3</td><td>31.9 KB</td><td>8.8 KB</td><td>+23.1 KB</td><td><span class="badge badge-david">David</span></td></tr>
+        <tr><td>wei4.mp3</td><td>31.9 KB</td><td>8.8 KB</td><td>+23.1 KB</td><td><span class="badge badge-david">David</span></td></tr>
+        <tr><td>zhuan4.mp3</td><td>31.9 KB</td><td>9.6 KB</td><td>+22.3 KB</td><td><span class="badge badge-david">David</span></td></tr>
+        <tr><td>huo2.mp3</td><td>30.6 KB</td><td>8.4 KB</td><td>+22.2 KB</td><td><span class="badge badge-david">David</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- David Only -->
+<div class="section">
+  <h2><span class="badge badge-david">David Only</span> 36 files not in Hugo</h2>
+  <p style="color:var(--muted); font-size:0.85rem; margin-bottom:0.5rem">Mostly rare syllable variants (luu/nuue/luue/luun patterns), 5th-tone dei5, and missing tone completions.</p>
+  <div class="file-list">
+    <div>dei5.mp3 (15.6 KB) — <span class="badge badge-green">5th tone</span></div>
+    <div>diang2.mp3 (17.2 KB) · diang3.mp3 (13.9 KB) · diang4.mp3 (21.4 KB)</div>
+    <div>ju4.mp3 (17.2 KB)</div>
+    <div>luu1.mp3 (18.9 KB) · luu2.mp3 (26.9 KB) · luu3.mp3 (25.2 KB) · luu4.mp3 (18.5 KB)</div>
+    <div>luue1.mp3 (15.2 KB) · luue2.mp3 (18.9 KB) · luue3.mp3 (19.8 KB) · luue4.mp3 (27.7 KB)</div>
+    <div>luun.mp3 (18.1 KB) · luun2.mp3 (29.4 KB) · luun3.mp3 (26.0 KB) · luun4.mp3 (26.0 KB)</div>
+    <div>muo3.mp3 (23.9 KB)</div>
+    <div>nue1.mp3 (18.9 KB)</div>
+    <div>nuu1.mp3 (16.4 KB) · nuu2.mp3 (18.9 KB) · nuu3.mp3 (22.7 KB) · nuu4.mp3 (23.1 KB)</div>
+    <div>nuue2.mp3 (20.2 KB) · nuue3.mp3 (24.8 KB) · nuue4.mp3 (25.2 KB)</div>
+    <div>rei1.mp3 (21.0 KB)</div>
+    <div>sei1.mp3 (15.6 KB) · sei2.mp3 (17.2 KB) · sei3.mp3 (18.9 KB)</div>
+    <div>... +6 more</div>
+  </div>
+</div>
+
+<!-- Hugo Only -->
+<div class="section">
+  <h2><span class="badge badge-hugo">Hugo Only</span> 120 files not in David</h2>
+  <p style="color:var(--muted); font-size:0.85rem; margin-bottom:0.5rem">Mostly 5th-tone (neutral) variants — Hugo has 19 tone-5 files vs David's 1. Also has rare syllables like dia1-4, cei1-4, and more.</p>
+  <div class="file-list">
+    <div>a5.mp3 (15.1 KB) · ai5.mp3 (26.5 KB) · an5.mp3 (19.5 KB) · ang5.mp3 (22.8 KB)</div>
+    <div>ao5.mp3 (15.5 KB) · ba5.mp3 (40.9 KB) · bai5.mp3 (10.0 KB) · ban5.mp3 (41.6 KB)</div>
+    <div>bang5.mp3 (14.8 KB) · bao5.mp3 (29.9 KB) · bei5.mp3 (35.3 KB) · ben5.mp3 (29.2 KB)</div>
+    <div>beng5.mp3 (28.4 KB) · bi5.mp3 (11.7 KB) · bian5.mp3 (13.2 KB)</div>
+    <div>biao1.mp3 (9.2 KB) · biao5.mp3 (10.0 KB) · bie5.mp3 (7.6 KB)</div>
+    <div>bin5.mp3 (18.8 KB) · bing5.mp3 (22.4 KB)</div>
+    <div>cei1.mp3 (10.0 KB) · cei2.mp3 (9.6 KB) · cei3.mp3 (10.7 KB) · cei4.mp3 (8.8 KB)</div>
+    <div>cuo2.mp3 (10.0 KB)</div>
+    <div>dia1.mp3 (9.2 KB) · dia2.mp3 (10.7 KB) · dia3.mp3 (11.3 KB) · dia4.mp3 (8.0 KB)</div>
+    <div>... +90 more (mostly 5th-tone completions)</div>
+  </div>
+</div>
+
+<!-- Hugo Original Repo -->
+<div class="section">
+  <h2>Hugo Original (hugolpz/audio-cmn) — Extended Coverage</h2>
+  <div class="grid" style="margin-top:0.75rem">
+    <div class="card">
+      <h2>64k/syllabs</h2>
+      <div class="big" style="color:var(--hugo)">1,707</div>
+      <div class="label">Syllable recordings — cmn-{tonedPinyin}.mp3</div>
+      <div style="margin-top:0.5rem; color:var(--muted); font-size:0.8rem">By Chen Wang (CC-by-sa). Same count as aggregator audio/ + more/.</div>
+    </div>
+    <div class="card">
+      <h2>64k/hsk</h2>
+      <div class="big" style="color:var(--hugo)">5,596</div>
+      <div class="label">HSK word recordings — cmn-{hanzi}.mp3</div>
+      <div style="margin-top:0.5rem; color:var(--muted); font-size:0.8rem">By Yue Tan (CC-by-sa). Full Chinese character filenames. Not in aggregator.</div>
+    </div>
+    <div class="card">
+      <h2>Quality Tiers</h2>
+      <div class="label" style="margin-bottom:0.5rem">Hugo provides 4 quality levels:</div>
+      <div class="stat-row"><span class="stat-label">96k</span><span class="stat-value">Best (hsk only)</span></div>
+      <div class="stat-row"><span class="stat-label">64k</span><span class="stat-value">Optimal (syllabs + hsk)</span></div>
+      <div class="stat-row"><span class="stat-label">24k-abr</span><span class="stat-value">~2× lighter, 80% quality</span></div>
+      <div class="stat-row"><span class="stat-label">18k-abr</span><span class="stat-value">~3× lighter, 60% quality</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Recommendation -->
+<div class="recommendation">
+  <h3>Recommended Merge Strategy</h3>
+  <ul>
+    <li><strong>Use David as primary</strong> — files are ~2× larger (higher quality/longer recordings)</li>
+    <li><strong>Add Hugo's 120 unique files</strong> — especially the 19× 5th-tone (neutral tone) recordings</li>
+    <li><strong>Add Hugo's 5,596 HSK word recordings</strong> — Chinese character filenames (cmn-一定.mp3 etc.) that neither David nor cmguo cover</li>
+    <li><strong>Result: ~1,623 + 120 + 5,596 = 7,339 files</strong> — complete syllable + word coverage</li>
+    <li><strong>Optional:</strong> Use Hugo's 64k or 96k quality tiers for the HSK word recordings</li>
+  </ul>
+</div>
+
+</body>
+</html>

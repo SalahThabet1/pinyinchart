@@ -120,6 +120,28 @@
   flex: 1;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+/* Scroll indicator — right fade on mobile */
+.table-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2.5rem;
+  background: linear-gradient(to right, transparent, var(--bg-primary));
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.table-wrap:hover::after {
+  opacity: 0.6;
+}
+.table-wrap.scrolled-right::after {
+  opacity: 0;
 }
 
 /* ===== Table ===== */

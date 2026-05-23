@@ -25,3 +25,6 @@ yarn-error.log*
 
 # Local Netlify folder
 .netlify
+
+# Audio merge report
+audio-replacement-report.md

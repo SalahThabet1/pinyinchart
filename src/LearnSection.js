@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import irregulars from './irregulars.json';
 import { FINAL_GROUPS } from './finalsGroups';
+import irregulars from './irregulars.json';
 import {
   IconMusic, IconPuzzle, IconBook,
   IconTable, IconTarget, IconAlert,
   IconTrending, IconRefresh
 } from './icons';
+import LearnTOC from './LearnTOC';
 import './LearnSection.css';
 
 /* ── Irregular groupings by phonetic category ── */
@@ -284,9 +285,13 @@ function IrregularGroup({ group }) {
 
 /* ── Main Learn Component ── */
 export default function LearnSection() {
+  const contentRef = useRef(null);
+  const [tocOpen, setTocOpen] = useState(false);
+
   return (
     <div className="learn-page">
-      <div className="learn-page-inner">
+      <LearnTOC containerRef={contentRef} isOpen={tocOpen} onToggle={setTocOpen} />
+      <div className="learn-page-inner" ref={contentRef}>
 
         {/* ── Header ── */}
         <FadeIn>
