@@ -228,6 +228,13 @@
   background: var(--bg-card);
 }
 
+/* ===== Irregular section below table ===== */
+.irreg-section {
+  max-width: 36rem;
+  margin: 0.5rem auto 0;
+  padding: 0 1rem 1rem;
+}
+
 /* ===== Desktop ===== */
 @media (min-width: 768px) {
   .header {

@@ -245,6 +245,14 @@ export default function App() {
           >
             Tone Sandhi
           </button>
+          <button
+            className={'tab-btn' + (activeTab === 'learn' ? ' tab-btn--active' : '')}
+            role="tab"
+            aria-selected={activeTab === 'learn'}
+            onClick={() => setActiveTab('learn')}
+          >
+            Learn
+          </button>
         </nav>
 
         {activeTab === 'chart' && (
@@ -313,14 +321,17 @@ export default function App() {
                   </motion.div>
                 )}
               </AnimatePresence>
-              <IrregularCard />
             </div>
 
-            <LearnSection />
+            <div className="irreg-section">
+              <IrregularCard />
+            </div>
           </>
         )}
 
         {activeTab === 'pairs' && <TonePairBoard />}
+
+        {activeTab === 'learn' && <LearnSection />}
 
         {active && (
           <ToneSheet

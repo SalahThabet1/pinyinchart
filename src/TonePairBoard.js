@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import tonePairWords from './tonePairWords.json';
+import wordsWithAudio from './wordsWithAudio.json';
 import { IconPlay, IconSpeaker } from './icons';
 import './TonePairBoard.css';
 
@@ -9,25 +10,6 @@ const TONE_COLORS = ['var(--tone-1)', 'var(--tone-2)', 'var(--tone-3)', 'var(--t
 const TONE_LABELS = ['1st', '2nd', '3rd', '4th'];
 const ROW_TONES = [1, 2, 3, 4];
 const COL_TONES = [1, 2, 3, 4, 5]; // 5 = neutral (轻声)
-
-/* Tone-marked pinyin → audio filename converter */
-const TONE_TO_NUM = {'ā':'a1','á':'a2','ǎ':'a3','à':'a4',
-  'ē':'e1','é':'e2','ě':'e3','è':'e4',
-  'ī':'i1','í':'i2','ǐ':'i3','ì':'i4',
-  'ō':'o1','ó':'o2','ǒ':'o3','ò':'o4',
-  'ū':'u1','ú':'u2','ǔ':'u3','ù':'u4',
-  'ǖ':'v1','ǘ':'v2','ǚ':'v3','ǜ':'v4',
-  'ü':'v'};
-
-function pinyinAudioSrc(py) {
-  let s = '', t = '';
-  for (const ch of py) {
-    const m = TONE_TO_NUM[ch];
-    if (m) { if (m[1]) { t = m[1]; s += m[0]; } else s += m; }
-    else s += ch;
-  }
-  return `${process.env.PUBLIC_URL || ''}/audio/${s}${t}.mp3`;
-}
 
 function hapticFeedback() {
   try { if (navigator.vibrate) navigator.vibrate(10); } catch (_) {}
@@ -50,35 +32,12 @@ function WordPopup({ pairKey, words, onClose }) {
     setPlayingIdx(idx);
 
     const wordSrc = `${process.env.PUBLIC_URL || ''}/audio/${word.chars}.mp3`;
-
-    // Try full word audio first, fall back to syllable stitching
-    const testAudio = new Audio(wordSrc);
-    testAudio.addEventListener('loadeddata', () => {
-      // Full word audio exists — play it
-      if (audioRef.current) audioRef.current.pause();
-      const a = new Audio(wordSrc);
-      audioRef.current = a;
-      a.onended = () => setPlayingIdx(null);
-      a.onerror = () => setPlayingIdx(null);
-      a.play().catch(() => setPlayingIdx(null));
-    });
-    testAudio.addEventListener('error', () => {
-      // No full word audio — stitch syllables
-      const syllables = word.syllables;
-      let i = 0;
-      const playNext = () => {
-        if (i >= syllables.length) { setPlayingIdx(null); return; }
-        const src = pinyinAudioSrc(syllables[i]);
-        if (audioRef.current) audioRef.current.pause();
-        const a = new Audio(src);
-        audioRef.current = a;
-        a.onended = () => { i++; setTimeout(playNext, i < syllables.length ? 100 : 0); };
-        a.onerror = () => { i++; setTimeout(playNext, 100); };
-        a.play().catch(() => setPlayingIdx(null));
-      };
-      playNext();
-    });
-    testAudio.load();
+    if (audioRef.current) audioRef.current.pause();
+    const a = new Audio(wordSrc);
+    audioRef.current = a;
+    a.onended = () => setPlayingIdx(null);
+    a.onerror = () => setPlayingIdx(null);
+    a.play().catch(() => setPlayingIdx(null));
   }, [playingIdx]);
 
   return (
@@ -101,7 +60,7 @@ function WordPopup({ pairKey, words, onClose }) {
               <span className="tpop-sep">-</span>
               <span className="tpop-tone-num" style={{ color: colTone === 5 ? 'var(--text-secondary)' : TONE_COLORS[colTone - 1] }}>{colLabel}</span>
             </span>
-            <span className="tpop-title-label">{words.length} words</span>
+            <span className="tpop-title-label">{words.length} word{words.length !== 1 ? 's' : ''}</span>
           </div>
           <button className="tpop-close" onClick={onClose} aria-label="Close">✕</button>
         </div>
@@ -181,7 +140,7 @@ export default function TonePairBoard() {
   const closePopup = useCallback(() => setPopupPair(null), []);
 
   const activeWords = popupPair
-    ? (tonePairWords[popupPair] || []).slice(0, 8)
+    ? (tonePairWords[popupPair] || []).filter(w => wordsWithAudio[w.chars]).slice(0, 8)
     : [];
 
   return (
@@ -223,13 +182,14 @@ export default function TonePairBoard() {
               {COL_TONES.map(colTone => {
                 const pairKey = `${rowTone}-${colTone}`;
                 const words = tonePairWords[pairKey] || [];
+                const audioWords = words.filter(w => wordsWithAudio[w.chars]);
                 return (
                   <TonePairCell
                     key={pairKey}
                     rowTone={rowTone}
                     colTone={colTone}
                     pairKey={pairKey}
-                    words={words}
+                    words={audioWords}
                     onClick={openPopup}
                   />
                 );
