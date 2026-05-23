@@ -40,7 +40,7 @@ function WordPopup({ pairKey, words, onClose }) {
   const [rowTone, colTone] = pairKey.split('-').map(Number);
   const colLabel = colTone === 5 ? '∅' : TONE_LABELS[colTone - 1];
 
-  const handlePlay = useCallback((idx, syllables) => {
+  const handlePlay = useCallback((idx, word) => {
     hapticFeedback();
     if (playingIdx === idx) {
       if (audioRef.current) { audioRef.current.pause(); }
@@ -48,18 +48,37 @@ function WordPopup({ pairKey, words, onClose }) {
       return;
     }
     setPlayingIdx(idx);
-    let i = 0;
-    const playNext = () => {
-      if (i >= syllables.length) { setPlayingIdx(null); return; }
-      const src = pinyinAudioSrc(syllables[i]);
+
+    const wordSrc = `${process.env.PUBLIC_URL || ''}/audio/${word.chars}.mp3`;
+
+    // Try full word audio first, fall back to syllable stitching
+    const testAudio = new Audio(wordSrc);
+    testAudio.addEventListener('loadeddata', () => {
+      // Full word audio exists — play it
       if (audioRef.current) audioRef.current.pause();
-      const a = new Audio(src);
+      const a = new Audio(wordSrc);
       audioRef.current = a;
-      a.onended = () => { i++; setTimeout(playNext, i < syllables.length ? 100 : 0); };
-      a.onerror = () => { i++; setTimeout(playNext, 100); };
+      a.onended = () => setPlayingIdx(null);
+      a.onerror = () => setPlayingIdx(null);
       a.play().catch(() => setPlayingIdx(null));
-    };
-    playNext();
+    });
+    testAudio.addEventListener('error', () => {
+      // No full word audio — stitch syllables
+      const syllables = word.syllables;
+      let i = 0;
+      const playNext = () => {
+        if (i >= syllables.length) { setPlayingIdx(null); return; }
+        const src = pinyinAudioSrc(syllables[i]);
+        if (audioRef.current) audioRef.current.pause();
+        const a = new Audio(src);
+        audioRef.current = a;
+        a.onended = () => { i++; setTimeout(playNext, i < syllables.length ? 100 : 0); };
+        a.onerror = () => { i++; setTimeout(playNext, 100); };
+        a.play().catch(() => setPlayingIdx(null));
+      };
+      playNext();
+    });
+    testAudio.load();
   }, [playingIdx]);
 
   return (
@@ -107,7 +126,7 @@ function WordPopup({ pairKey, words, onClose }) {
                 </div>
                 <button
                   className={`tpop-play ${playingIdx === i ? 'tpop-play--active' : ''}`}
-                  onClick={() => handlePlay(i, w.syllables)}
+                  onClick={() => handlePlay(i, w)}
                   aria-label={`Play ${w.chars}`}
                 >
                   {playingIdx === i ? <IconSpeaker size={16} /> : <IconPlay size={16} />}
