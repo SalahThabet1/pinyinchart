@@ -8,11 +8,10 @@ import TonePairBoard from './TonePairBoard';
 import LearnSection from './LearnSection';
 import { FINAL_GROUPS } from './finalsGroups';
 import irregulars from './irregulars.json';
-import { IconInfo } from './icons';
+import { IconInfo, IconTable, IconRefresh, IconBook } from './icons';
 import './App.css';
 import './components/SoundCell.css';
 import './components/ToneSheet.css';
-import './components/IrregularCard.css';
 
 /* Tone-marked pinyin → audio filename converter */
 const TONE_TO_NUM = {'ā':'a1','á':'a2','ǎ':'a3','à':'a4',
@@ -128,31 +127,82 @@ function ToneSheet({ syllable, pinyins, onPlay, onClose }) {
   );
 }
 
-/* ── Irregular legend badge ── */
-function IrregularCard() {
-  const [open, setOpen] = useState(false);
-  const irregKeys = Object.keys(irregulars);
+/* ── Irregular groupings by phonetic category ── */
+const IRREG_GROUPS = [
+  {
+    label: 'Apical Vowels (舌尖音)',
+    desc: 'The letter "i" sounds completely different — no front vowel, just a sustained buzz.',
+    keys: ['zi', 'ci', 'si', 'zhi', 'chi', 'shi', 'ri'],
+  },
+  {
+    label: 'Ü Rule — Written "u", Spoken "ü"',
+    desc: 'After j, q, x and y, the letter "u" represents the rounded front vowel [y]. The umlaut is omitted in writing.',
+    keys: ['ju', 'qu', 'xu', 'juan', 'quan', 'xuan', 'jun', 'qun', 'xun', 'jue', 'que', 'xue', 'yuan', 'yue', 'yun'],
+  },
+  {
+    label: 'Vowel Shifts',
+    desc: 'Letters "e" and "a" take unexpected values in certain environments.',
+    keys: ['ye', 'yan', 'yin', 'ying'],
+  },
+  {
+    label: 'Hidden Glides',
+    desc: 'Compound finals conceal an extra vowel that surfaces in careful speech.',
+    keys: ['iu', 'ui', 'un'],
+  },
+  {
+    label: 'Labial + "o" → [wo]',
+    desc: 'A [w] glide is inserted between labial initials and "o".',
+    keys: ['bo', 'po', 'mo', 'fo', 'lo', 'yo'],
+  },
+  {
+    label: 'Eng as [əŋ]',
+    desc: 'The "eng" final uses a schwa [ə], not a front [e].',
+    keys: ['beng', 'peng', 'weng', 'yong'],
+  },
+  {
+    label: 'Syllabic Nasals',
+    desc: 'Standalone nasal consonants — no vowel at all.',
+    keys: ['m', 'n', 'ng', 'hm', 'hng'],
+  },
+  {
+    label: 'Rare / Exceptional',
+    desc: 'Syllables that break standard initial-final constraints.',
+    keys: ['dia', 'nun', 'bia'],
+  },
+];
+
+/* ── Irregular group card ── */
+function IrregularGroupCard({ group }) {
   return (
-    <div className={`irregular-card${open ? ' irregular-card--open' : ''}`}>
-      <button className="irregular-card-head" onClick={() => setOpen(o => !o)} aria-expanded={open}>
-        <IconInfo size={14} />
-        <span>Irregular Pronunciations ({irregKeys.length})</span>
-        <span className="irregular-card-arrow" aria-hidden="true">
-          <svg width="8" height="5" viewBox="0 0 8 5" fill="none">
-            <path d="M1 1l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </span>
-      </button>
-      {open && (
-        <div className="irregular-card-body">
-          {irregKeys.map(k => (
-            <div key={k} className="irregular-card-row">
-              <code className="irregular-card-syl">{k}</code>
-              <span className="irregular-card-exp">{irregulars[k]}</span>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="btm-irreg-group">
+      <h4 className="btm-irreg-head">{group.label}</h4>
+      <p className="btm-irreg-desc">{group.desc}</p>
+      <div className="btm-irreg-rows">
+        {group.keys.map(k => (
+          <div key={k} className="btm-irreg-row">
+            <code className="btm-irreg-syl">{k}</code>
+            <span className="btm-irreg-exp">{irregulars[k]}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Irregular section below Sound Table ── */
+function IrregularCard() {
+  return (
+    <div className="btm-irreg-wrap">
+      <h3 className="btm-irreg-title">
+        <IconInfo size={16} />
+        Irregular Pronunciations
+      </h3>
+      <p className="btm-irreg-sub">
+        Syllables that break the expected sound rules from their spelling, grouped by phonetic theme.
+      </p>
+      {IRREG_GROUPS.map(g => (
+        <IrregularGroupCard key={g.label} group={g} />
+      ))}
     </div>
   );
 }
@@ -235,6 +285,7 @@ export default function App() {
             aria-selected={activeTab === 'chart'}
             onClick={() => setActiveTab('chart')}
           >
+            <IconTable size={14} />
             Sound Table
           </button>
           <button
@@ -243,6 +294,7 @@ export default function App() {
             aria-selected={activeTab === 'pairs'}
             onClick={() => setActiveTab('pairs')}
           >
+            <IconRefresh size={14} />
             Tone Sandhi
           </button>
           <button
@@ -251,6 +303,7 @@ export default function App() {
             aria-selected={activeTab === 'learn'}
             onClick={() => setActiveTab('learn')}
           >
+            <IconBook size={14} />
             Learn
           </button>
         </nav>
