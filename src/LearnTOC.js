@@ -58,7 +58,9 @@ function useActiveHeading(headings, containerRef) {
 
 export default function LearnTOC({ containerRef }) {
   const headings = useLearnHeadings(containerRef);
-  const activeIdx = useActiveHeading(headings, containerRef);
+  const autoIdx = useActiveHeading(headings, containerRef);
+  const [clickedIdx, setClickedIdx] = useState(null);
+  const activeIdx = clickedIdx !== null ? clickedIdx : autoIdx;
   const [visible, setVisible] = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState(-1);
   const lastScrollY = useRef(0);
@@ -102,8 +104,8 @@ export default function LearnTOC({ containerRef }) {
         {headings.map((h, i) => (
           <button
             key={h.id}
-            className={`lp-toc-item${i === activeIdx ? ' lp-toc-item--active' : ''}${i === hoveredIdx ? ' lp-toc-item--hover' : ''}`}
-            onClick={() => scrollTo(h.id)}
+            className={`lp-toc-item${i === activeIdx ? ' lp-toc-item--active' : ''}${i === hoveredIdx ? ' lp-toc-item--hover' : ''}${clickedIdx === i ? ' lp-toc-item--clicked' : ''}`}
+            onClick={() => { setClickedIdx(i); scrollTo(h.id); }}
             onMouseEnter={() => setHoveredIdx(i)}
             onMouseLeave={() => setHoveredIdx(-1)}
           >

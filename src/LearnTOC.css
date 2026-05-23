@@ -67,6 +67,24 @@
   box-shadow: 0 0 4px rgba(192, 57, 43, 0.3);
 }
 
+/* Clicked state — stronger, persistent highlight */
+.lp-toc-item--clicked .lp-toc-line {
+  background: var(--text-accent);
+  height: 1.4rem;
+  width: 3px;
+  box-shadow: 0 0 8px rgba(192, 57, 43, 0.5);
+}
+
+.lp-toc-item--clicked {
+  color: var(--text-accent);
+  font-weight: 700;
+}
+
+.lp-toc-item--clicked .lp-toc-text {
+  opacity: 1;
+  font-weight: 700;
+}
+
 .lp-toc-item--active {
   color: var(--text-accent);
 }
