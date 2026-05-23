@@ -99,12 +99,17 @@
   transform: scale(0.97);
 }
 
-.tab-btn--active {
+/* Active tab must be immune to hover/focus override */
+.tab-btn--active,
+.tab-btn--active:hover,
+.tab-btn--active:focus,
+.tab-btn--active:focus-visible {
   color: var(--text-accent);
   font-weight: 500;
   background: var(--bg-card);
   border-color: rgba(192, 57, 43, 0.25);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  outline: none;
 }
 
 .tab-btn svg {
