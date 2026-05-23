@@ -387,7 +387,7 @@ export default function App() {
             &middot; Words from HSK 2012 &middot; Dictionary data from <a href="https://cc-cedict.org" target="_blank" rel="noopener noreferrer">CC-CEDICT</a> (CC-BY-SA 4.0)
           </p>
           <p className="lp-footer-copy">
-            All rights reserved &middot; Trademark falafelinhotpot.com
+            All rights reserved &middot; &copy; falafelinhotpot.com
           </p>
         </div>
 
