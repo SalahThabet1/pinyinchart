@@ -72,17 +72,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-secondary);
   font-family: var(--font-sans);
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 400;
-  letter-spacing: 0.06em;
-  padding: 0.4rem 0.5rem;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.6rem;
   cursor: pointer;
-  transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  transition: color 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   border-radius: 8px;
@@ -235,7 +235,7 @@
 
 /* ===== Irregular section below table ===== */
 .irreg-section {
-  max-width: 36rem;
+  max-width: 40rem;
   margin: 0.5rem auto 0;
   padding: 0 1rem 1rem;
 }
@@ -246,13 +246,13 @@
 
 .btm-irreg-title {
   font-family: var(--font-serif);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: 500;
   color: var(--text-primary);
-  margin: 0 0 0.2rem;
+  margin: 0 0 0.3rem;
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .btm-irreg-title svg {
@@ -261,14 +261,15 @@
 }
 
 .btm-irreg-sub {
-  font-size: 0.72rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
   color: var(--text-secondary);
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.7rem;
   opacity: 0.7;
 }
 
 .btm-irreg-group {
-  margin: 0.6rem 0;
+  margin: 0.7rem 0;
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   overflow: hidden;
@@ -277,20 +278,20 @@
 
 .btm-irreg-head {
   font-family: var(--font-serif);
-  font-size: 0.78rem;
+  font-size: 0.92rem;
   font-weight: 500;
   color: var(--text-primary);
   margin: 0;
-  padding: 0.4rem 0.65rem;
+  padding: 0.5rem 0.75rem;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
 }
 
 .btm-irreg-desc {
-  font-size: 0.68rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.55;
   color: var(--text-secondary);
-  padding: 0.3rem 0.65rem 0.15rem;
+  padding: 0.4rem 0.75rem 0.2rem;
   margin: 0;
   opacity: 0.7;
 }
@@ -303,10 +304,10 @@
 .btm-irreg-row {
   display: flex;
   flex-direction: column;
-  gap: 0.05rem;
-  padding: 0.35rem 0.65rem;
+  gap: 0.1rem;
+  padding: 0.55rem 0.75rem;
   border-bottom: 1px solid var(--border-color);
-  line-height: 1.4;
+  line-height: 1.5;
   transition: background 0.15s ease;
 }
 
@@ -320,15 +321,15 @@
 
 .btm-irreg-syl {
   font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: 0.82rem;
+  font-weight: 600;
+  font-size: 0.95rem;
   color: var(--text-accent);
 }
 
 .btm-irreg-exp {
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   color: var(--text-primary);
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 /* ===== Desktop ===== */
@@ -352,8 +353,8 @@
   }
 
   .tab-btn {
-    font-size: 0.7rem;
-    padding: 0.55rem 0.75rem;
+    font-size: 0.85rem;
+    padding: 0.65rem 0.85rem;
   }
 
   .controls-bar {
