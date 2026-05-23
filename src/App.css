@@ -73,9 +73,9 @@
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  border: 1px solid rgba(192, 57, 43, 0.12);
-  background: rgba(192, 57, 43, 0.03);
-  color: rgba(192, 57, 43, 0.5);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 400;
@@ -90,9 +90,9 @@
 }
 
 .tab-btn:hover {
-  color: var(--text-accent);
-  background: rgba(192, 57, 43, 0.06);
-  border-color: rgba(192, 57, 43, 0.2);
+  color: rgba(192, 57, 43, 0.6);
+  background: rgba(192, 57, 43, 0.04);
+  border-color: rgba(192, 57, 43, 0.1);
 }
 
 .tab-btn:active {
@@ -109,8 +109,8 @@
 
 .tab-btn svg {
   flex-shrink: 0;
-  opacity: 0.4;
-  color: var(--text-accent);
+  opacity: 0.5;
+  transition: opacity 0.2s;
 }
 
 .tab-btn--active svg {
