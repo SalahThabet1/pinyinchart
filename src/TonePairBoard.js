@@ -1,13 +1,27 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import pinyinData from './pinyins.json';
 import tonePairWords from './tonePairWords.json';
 import { IconPlay, IconSpeaker } from './icons';
 import './TonePairBoard.css';
 
 /* ===== Constants ===== */
-const mp3Url = id =>
-  `https://tone.lib.msu.edu/tone/${id}/PROXY_MP3/download`;
+/* Tone-marked pinyin → audio filename converter */
+const TONE_TO_NUM = {'ā':'a1','á':'a2','ǎ':'a3','à':'a4',
+  'ē':'e1','é':'e2','ě':'e3','è':'e4',
+  'ī':'i1','í':'i2','ǐ':'i3','ì':'i4',
+  'ō':'o1','ó':'o2','ǒ':'o3','ò':'o4',
+  'ū':'u1','ú':'u2','ǔ':'u3','ù':'u4',
+  'ǖ':'v1','ǘ':'v2','ǚ':'v3','ǜ':'v4',
+  'ü':'v'};
+const pinyinAudioSrc = py => {
+  let s = '', t = '';
+  for (const ch of py) {
+    const m = TONE_TO_NUM[ch];
+    if (m) { if (m[1]) { t = m[1]; s += m[0]; } else s += m; }
+    else s += ch;
+  }
+  return `${process.env.PUBLIC_URL || ''}/audio/${s}${t}.mp3`;
+};
 
 const TONE_COLORS = ['var(--tone-1)', 'var(--tone-2)', 'var(--tone-3)', 'var(--tone-4)'];
 const TONE_LABELS = ['1st', '2nd', '3rd', '4th'];
@@ -18,20 +32,13 @@ function hapticFeedback() {
   try { if (navigator.vibrate) navigator.vibrate(10); } catch (_) {}
 }
 
-/* Get audio ID for a pinyin syllable */
-function getAudioId(py) {
-  const ids = pinyinData[py];
-  if (!ids || !ids.length) return null;
-  return ids[0]; // consistent voice
-}
-
 /* Play a sequence of syllables with configurable gap */
 async function playSyllableSequence(syllables, audioRef, gapMs = 200) {
   for (let i = 0; i < syllables.length; i++) {
-    const id = getAudioId(syllables[i]);
-    if (!id) continue;
+    const src = pinyinAudioSrc(syllables[i]);
+    if (!syllables[i]) continue;
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
-    const a = new Audio(mp3Url(id));
+    const a = new Audio(src);
     audioRef.current = a;
     await new Promise(resolve => {
       a.onended = resolve;

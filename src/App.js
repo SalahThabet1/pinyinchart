@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import pinyinData from './pinyins.json';
 import syllablesData from './syllables.json';
 import syllableToPinyins from './syllableToPinyins.json';
 import SearchBar from './SearchBar';
@@ -15,8 +14,23 @@ import './components/SoundCell.css';
 import './components/ToneSheet.css';
 import './components/IrregularCard.css';
 
-const mp3Url = id =>
-  `https://tone.lib.msu.edu/tone/${id}/PROXY_MP3/download`;
+/* Tone-marked pinyin → audio filename converter */
+const TONE_TO_NUM = {'ā':'a1','á':'a2','ǎ':'a3','à':'a4',
+  'ē':'e1','é':'e2','ě':'e3','è':'e4',
+  'ī':'i1','í':'i2','ǐ':'i3','ì':'i4',
+  'ō':'o1','ó':'o2','ǒ':'o3','ò':'o4',
+  'ū':'u1','ú':'u2','ǔ':'u3','ù':'u4',
+  'ǖ':'v1','ǘ':'v2','ǚ':'v3','ǜ':'v4',
+  'ü':'v'};
+const pinyinAudioSrc = py => {
+  let s = '', t = '';
+  for (const ch of py) {
+    const m = TONE_TO_NUM[ch];
+    if (m) { if (m[1]) { t = m[1]; s += m[0]; } else s += m; }
+    else s += ch;
+  }
+  return `${process.env.PUBLIC_URL || ''}/audio/${s}${t}.mp3`;
+};
 
 /* Light haptic feedback for mobile */
 function hapticFeedback() {
@@ -160,10 +174,8 @@ export default function App() {
       const dataIdx = TONE_DISPLAY_ORDER[modeIndex - 1];
       const py = pins[dataIdx];
       if (!py) return;
-      const ids = pinyinData[py];
-      if (!ids || !ids.length) return;
       if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
-      const a = new Audio(mp3Url(ids[0]));
+      const a = new Audio(pinyinAudioSrc(py));
       audioRef.current = a;
       a.play().catch(() => {});
       return;
@@ -176,10 +188,9 @@ export default function App() {
 
   const play = useCallback(py => {
     hapticFeedback();
-    const ids = pinyinData[py];
-    if (!ids || !ids.length) return;
+    if (!py) return;
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
-    const a = new Audio(mp3Url(ids[0]));
+    const a = new Audio(pinyinAudioSrc(py));
     audioRef.current = a;
     a.play().catch(() => {});
   }, []);
