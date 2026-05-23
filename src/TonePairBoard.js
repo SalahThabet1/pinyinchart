@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import tonePairWords from './tonePairWords.json';
 import wordsWithAudio from './wordsWithAudio.json';
 import { IconPlay, IconSpeaker } from './icons';
+import { colorPinyin } from './pinyinColor';
 import './TonePairBoard.css';
 
 /* ── Constants ── */
@@ -78,7 +79,7 @@ function WordPopup({ pairKey, words, onClose }) {
               <div className="tpop-word-main">
                 <div className="tpop-word-left">
                   <span className="tpop-chars">{w.chars}</span>
-                  <span className="tpop-pinyin">{w.pinyin}</span>
+                  <span className="tpop-pinyin">{colorPinyin(w.pinyin)}</span>
                   {w.translation && (
                     <span className="tpop-trans">{w.translation}</span>
                   )}
@@ -213,7 +214,7 @@ export default function TonePairBoard() {
             <span className="tp-legend-dot" style={{ background: 'var(--tone-4)' }} /> 4th
           </span>
           <span className="tp-legend-item">
-            <span className="tp-legend-dot" style={{ background: 'var(--text-secondary)', opacity: 0.5 }} /> ∅ neutral
+            <span className="tp-legend-dot" style={{ background: 'var(--tone-neutral)' }} /> ∅ neutral
           </span>
           <span className="tp-legend-item tp-legend-sandhi">⚡ 3-3 sandhi</span>
         </div>

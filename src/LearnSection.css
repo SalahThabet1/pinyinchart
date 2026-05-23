@@ -668,6 +668,7 @@
 .tone-tag.t2 { background: var(--tone-2); }
 .tone-tag.t3 { background: var(--tone-3); }
 .tone-tag.t4 { background: var(--tone-4); }
+.tone-tag.t5 { background: var(--tone-neutral); color: white; }
 
 /* ── Desktop tweaks ── */
 @media (min-width: 768px) {
