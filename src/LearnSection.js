@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FINAL_GROUPS } from './finalsGroups';
 import irregulars from './irregulars.json';
@@ -286,11 +286,10 @@ function IrregularGroup({ group }) {
 /* ── Main Learn Component ── */
 export default function LearnSection() {
   const contentRef = useRef(null);
-  const [tocOpen, setTocOpen] = useState(false);
 
   return (
     <div className="learn-page">
-      <LearnTOC containerRef={contentRef} isOpen={tocOpen} onToggle={setTocOpen} />
+      <LearnTOC containerRef={contentRef} />
       <div className="learn-page-inner" ref={contentRef}>
 
         {/* ── Header ── */}

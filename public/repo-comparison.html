@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinyin Audio Repo Comparison</title>
+<style>
+  :root {
+    --ink: #1C1C1C;
+    --red: #C0392B;
+    --parchment: #FBF7ED;
+    --clay: #EDDCC6;
+    --ivory: #FDF9F1;
+    --gold: #C39A3C;
+    --plum: #261B1C;
+    --font-sans: -apple-system, 'Segoe UI', sans-serif;
+    --font-serif: Georgia, 'Noto Serif', serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--parchment);
+    color: var(--ink);
+    padding: 2rem 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.3rem;
+  }
+  .subtitle {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--text-secondary, #666);
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .summary-card {
+    background: var(--ivory);
+    border: 1px solid var(--clay);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .summary-card .num {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--red);
+  }
+  .summary-card .label {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.25rem;
+  }
+  .section {
+    margin-bottom: 2rem;
+  }
+  .section h2 {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 400;
+    border-bottom: 2px solid var(--clay);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  .venn {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+  .venn-svg { max-width: 400px; width: 100%; }
+  .size-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .size-table th {
+    background: var(--ink);
+    color: var(--ivory);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .size-table td {
+    padding: 0.4rem 0.75rem;
+    border-bottom: 1px solid var(--clay);
+  }
+  .size-table tr:nth-child(even) { background: var(--ivory); }
+  .size-table .winner { color: var(--red); font-weight: 600; }
+  .size-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--clay);
+    overflow: hidden;
+    margin-top: 0.2rem;
+  }
+  .size-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .size-bar-fill.hugo { background: var(--gold); }
+  .size-bar-fill.cmguo { background: var(--red); }
+  .bar-group { display: flex; align-items: center; gap: 0.5rem; }
+  .bar-label { font-size: 0.7rem; color: #666; min-width: 3rem; }
+  .bar-track { flex: 1; }
+  .coverage-bars { margin: 1rem 0; }
+  .coverage-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .coverage-label {
+    min-width: 80px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .coverage-bar {
+    flex: 1;
+    height: 24px;
+    background: var(--clay);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .coverage-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    font-size: 0.7rem;
+    color: white;
+    font-weight: 600;
+    transition: width 0.6s ease;
+  }
+  .coverage-fill.hugo { background: var(--gold); }
+  .coverage-fill.cmguo { background: var(--red); }
+  .coverage-fill.both { background: var(--ink); }
+  .footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--clay);
+    font-size: 0.7rem;
+    color: #999;
+    text-align: center;
+  }
+  @media (max-width: 600px) {
+    body { padding: 1rem 0.5rem; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .coverage-row { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+    .coverage-bar { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Pinyin Audio Repo Comparison</h1>
+<p class="subtitle">cmguo/PinYinSound vs hugolpz/audio-cmn — coverage, size, and naming analysis</p>
+
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="num">1,420</div>
+    <div class="label">cmguo (David) files</div>
+  </div>
+  <div class="summary-card">
+    <div class="num">1,000</div>
+    <div class="label">Hugo files (64k)</div>
+  </div>
+  <div class="summary-card">
+    <div class="num">748</div>
+    <div class="label">Files in both</div>
+  </div>
+  <div class="summary-card">
+    <div class="num">1,672</div>
+    <div class="label">Total unique files merged</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Coverage Breakdown</h2>
+  <div class="coverage-bars">
+    <div class="coverage-row">
+      <span class="coverage-label">Hugo</span>
+      <div class="coverage-bar">
+        <div class="coverage-fill hugo" style="width: 74.8%">748 shared</div>
+      </div>
+      <span style="font-size:0.75rem;color:#666">74.8%</span>
+    </div>
+    <div class="coverage-row">
+      <span class="coverage-label">cmguo</span>
+      <div class="coverage-bar">
+        <div class="coverage-fill cmguo" style="width: 52.7%">748 shared</div>
+      </div>
+      <span style="font-size:0.75rem;color:#666">52.7%</span>
+    </div>
+    <div class="coverage-row">
+      <span class="coverage-label">Merged</span>
+      <div class="coverage-bar">
+        <div class="coverage-fill both" style="width: 44.7%">748 / 1,672</div>
+      </div>
+      <span style="font-size:0.75rem;color:#666">44.7% overlap</span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Unique Files</h2>
+  <div class="coverage-bars">
+    <div class="coverage-row">
+      <span class="coverage-label">Only Hugo</span>
+      <div class="coverage-bar">
+        <div class="coverage-fill hugo" style="width: 25.2%">252 files</div>
+      </div>
+    </div>
+    <div class="coverage-row">
+      <span class="coverage-label">Only cmguo</span>
+      <div class="coverage-bar">
+        <div class="coverage-fill cmguo" style="width: 40.2%">672 files</div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:0.8rem;color:#666;margin-top:0.5rem">
+    <strong>Hugo exclusives:</strong> 19 neutral-tone (tone 5) files + 28 special syllables (<code>_hm</code>, <code>_m</code>, <code>_n</code>, <code>_ng</code>, <code>_lvan</code>, <code>_nia</code>, <code>lvan</code>, <code>nia</code>)<br>
+    <strong>cmguo exclusives:</strong> 68 bare syllables (no tone number) + 604 tone variants not in Hugo
+  </p>
+</div>
+
+<div class="section">
+  <h2>File Size Comparison</h2>
+  <table class="size-table">
+    <thead>
+      <tr>
+        <th>Syllable</th>
+        <th>Hugo (64k)</th>
+        <th>cmguo</th>
+        <th>Ratio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>a1</strong></td>
+        <td>8,794 B</td>
+        <td>7,863 B</td>
+        <td>Hugo 1.12×</td>
+      </tr>
+      <tr>
+        <td><strong>ma1</strong></td>
+        <td>9,180 B</td>
+        <td>20,122 B</td>
+        <td>cmguo 2.19×</td>
+      </tr>
+      <tr>
+        <td><strong>zhao1</strong></td>
+        <td>— missing</td>
+        <td>15,280 B</td>
+        <td>cmguo only</td>
+      </tr>
+      <tr>
+        <td><strong>kao1</strong></td>
+        <td>8,030 B</td>
+        <td>18,864 B</td>
+        <td>cmguo 2.35×</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:0.8rem;color:#666;margin-top:0.5rem">
+    Hugo's 64k files are consistently ~8-9KB (64kbps bitrate). cmguo files range 7-20KB with variable quality.
+  </p>
+</div>
+
+<div class="section">
+  <h2>Naming Convention</h2>
+  <table class="size-table">
+    <thead>
+      <tr><th>Repo</th><th>Pattern</th><th>Example</th><th>Tones</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Hugo</strong></td>
+        <td><code>cmn-{syl}{tone}.mp3</code></td>
+        <td>cmn-ma1.mp3</td>
+        <td>1-5 (5 = neutral)</td>
+      </tr>
+      <tr>
+        <td><strong>cmguo</strong></td>
+        <td><code>{syl}{tone}.mp3</code></td>
+        <td>ma1.mp3</td>
+        <td>1-4 + bare (no number)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2>Recommendation</h2>
+  <div style="background:var(--ivory);border:1px solid var(--clay);border-radius:8px;padding:1rem;font-size:0.85rem;line-height:1.5">
+    <p><strong>Best merge strategy:</strong> Use cmguo as the base (1,420 files, broader tone coverage), then fill gaps from Hugo:</p>
+    <ul style="margin:0.5rem 0 0 1.2rem">
+      <li>Hugo's <strong>19 tone-5 (neutral)</strong> files — cmguo has none</li>
+      <li>Hugo's <strong>28 special syllables</strong> (<code>_hm</code>, <code>_m</code>, <code>_n</code>, <code>_ng</code>) — not in cmguo</li>
+      <li>Use Hugo's consistent 64kbps quality for any overlaps where cmguo's version is suspiciously large (2×+)</li>
+    </ul>
+    <p style="margin-top:0.5rem"><strong>Result:</strong> ~1,672 unique files, complete Mandarin syllable coverage.</p>
+  </div>
+</div>
+
+<div class="footer">
+  Generated 2026-05-23 · cmguo/PinYinSound (master) + hugolpz/audio-cmn (64k/syllabs)
+</div>
+
+</body>
+</html>
